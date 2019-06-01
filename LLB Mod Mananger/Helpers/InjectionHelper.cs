@@ -75,11 +75,11 @@ namespace LLB_Mod_Mananger
                     buildFailed = true;
                 }
             }
+            File.Copy(Directory.GetCurrentDirectory() + @"\ModMenu\" + "ModMenu.dll", _tempFolderPath + @"\ModMenu.dll");
 
             var _tempFiles = Directory.EnumerateFiles(_tempFolderPath, "*", SearchOption.AllDirectories)
                .Where(s => s.EndsWith(".dll") && s.Count(c => c == '.') == 1)
                .ToList();
-
 
 
             ///Start combining files in temp folder
@@ -301,6 +301,7 @@ namespace LLB_Mod_Mananger
             var _rewriters = Directory.EnumerateFiles(_gameFolder + @"\Managed", "*", SearchOption.AllDirectories)
                .Where(s => s.EndsWith("ASMRewriter.exe") && s.Count(c => c == '.') == 1)
                .ToList();
+            _rewriters.Add(Directory.GetCurrentDirectory() + @"\ModMenu\" + "ASMRewriter.exe");
 
             if (_rewriters != null)
             {
