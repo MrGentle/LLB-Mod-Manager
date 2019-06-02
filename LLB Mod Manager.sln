@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLB Mod Mananger", "LLB Mod Mananger\LLB Mod Mananger.csproj", "{13472C1C-49C8-44DA-AB27-44B46F725D2E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LLB Mod Manager", "LLB Mod Manager\LLB Mod Manager.csproj", "{13472C1C-49C8-44DA-AB27-44B46F725D2E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

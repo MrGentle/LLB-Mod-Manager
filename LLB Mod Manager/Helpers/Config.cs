@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
 
-namespace LLB_Mod_Mananger
+namespace LLB_Mod_Manager
 {
     class Config
     {

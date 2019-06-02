@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
-namespace LLB_Mod_Mananger
+namespace LLB_Mod_Manager
 {
     static class Program
     {

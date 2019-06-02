@@ -7,7 +7,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Diagnostics;
 
-namespace LLB_Mod_Mananger
+namespace LLB_Mod_Manager
 {
     class BackupHelper
     {

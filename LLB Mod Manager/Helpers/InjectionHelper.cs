@@ -10,7 +10,7 @@ using static System.Windows.Forms.ListBox;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
-namespace LLB_Mod_Mananger
+namespace LLB_Mod_Manager
 {
     class InjectionHelper
     {

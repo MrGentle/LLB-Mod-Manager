@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{13472C1C-49C8-44DA-AB27-44B46F725D2E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>LLB_Mod_Mananger</RootNamespace>
-    <AssemblyName>LLB Mod Mananger</AssemblyName>
+    <RootNamespace>LLB_Mod_Manager</RootNamespace>
+    <AssemblyName>LLB Mod Manager</AssemblyName>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

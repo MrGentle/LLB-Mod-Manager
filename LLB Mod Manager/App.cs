@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
 
-namespace LLB_Mod_Mananger
+namespace LLB_Mod_Manager
 {
     public partial class App : Form
     {
@@ -77,11 +77,6 @@ namespace LLB_Mod_Mananger
             }
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void BrowseButton_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog _LLBFolderFinder = new FolderBrowserDialog();
@@ -104,11 +99,6 @@ namespace LLB_Mod_Mananger
                     }
                 }
             }
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -273,11 +263,6 @@ namespace LLB_Mod_Mananger
 
         }
 
-        private void label4_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void pendingMods_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (pendingMods.SelectedItem != null)
@@ -312,11 +297,6 @@ namespace LLB_Mod_Mananger
                     richTextBox1.Text = "Mod has no readme file";
                 }
             }
-        }
-
-        private void App_Load(object sender, EventArgs e)
-        {
-
         }
 
         private void button1_Click(object sender, EventArgs e)

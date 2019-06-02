@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LLB_Mod_Mananger.Properties {
+namespace LLB_Mod_Manager.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace LLB_Mod_Mananger.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("LLB_Mod_Mananger.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("LLB_Mod_Manager.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,7 +61,7 @@ namespace LLB_Mod_Mananger.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to C:\Users\CrimZen\Desktop\DSharpPlus-Example-master.
         /// </summary>
         internal static string gamePath {
             get {

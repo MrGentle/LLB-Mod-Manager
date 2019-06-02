@@ -10,7 +10,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Windows.Forms;
 
-namespace LLB_Mod_Mananger
+namespace LLB_Mod_Manager
 {
     class CleanerHelper
     {

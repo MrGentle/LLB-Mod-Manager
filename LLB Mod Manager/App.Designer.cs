@@ -1,4 +1,4 @@
-﻿namespace LLB_Mod_Mananger
+﻿namespace LLB_Mod_Manager
 {
     partial class App
     {
@@ -57,7 +57,6 @@
             this.LabelGameLocation.Size = new System.Drawing.Size(163, 13);
             this.LabelGameLocation.TabIndex = 0;
             this.LabelGameLocation.Text = "LLBlaze/LLBlaze_Data directory:";
-            this.LabelGameLocation.Click += new System.EventHandler(this.label1_Click);
             // 
             // gameFolderPath
             // 
@@ -156,7 +155,6 @@
             this.label3.Size = new System.Drawing.Size(77, 13);
             this.label3.TabIndex = 11;
             this.label3.Text = "Installed mods:";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // button4
             // 
@@ -246,7 +244,6 @@
             this.Name = "App";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "LLB Mod Manager";
-            this.Load += new System.EventHandler(this.App_Load);
             this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();

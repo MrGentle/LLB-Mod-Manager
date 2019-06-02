@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LLB_Mod_Mananger
+namespace LLB_Mod_Manager
 {
     class StringBuilding
     {
