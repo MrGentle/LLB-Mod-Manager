@@ -8,13 +8,12 @@ using static System.Windows.Forms.ListBox;
 
 namespace LLB_Mod_Manager
 {
-    class AvailableMods
+    public class AvailableMods
     {
         public IEnumerable<string> GetFrom(string sourceDirectory)
         {
             var dllFiles = Directory.EnumerateFiles(sourceDirectory, "*", SearchOption.AllDirectories)
-               .Where(s => s.EndsWith(".dll") && s.Count(c => c == '.') == 1)
-               .ToList();
+               .Where(s => s.EndsWith(".dll") && !s.Contains("Resources")).ToList();
 
             return dllFiles;
         }

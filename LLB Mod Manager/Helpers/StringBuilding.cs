@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LLB_Mod_Manager
 {
-    class StringBuilding
+    public class StringBuilding
     {
         public static string getBetweenStr(string strSource, string strStart, string strEnd)
         {

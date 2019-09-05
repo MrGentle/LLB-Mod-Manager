@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace LLB_Mod_Manager
 {
-    class Config
+    public class Config
     {
         public void SaveConfig(string path)
         {

@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
+using Octokit;
+using System.Runtime.InteropServices;
 
 namespace LLB_Mod_Manager
 {
@@ -16,64 +18,50 @@ namespace LLB_Mod_Manager
     {
         public string gameFolderPathString = "";
         public string availableModsPath = "";
-        public string dataFolderEnding = "";//@"\LethalLeague_B_Data";
+        public string dataFolderEnding = "";//@"\LLBlaze_Data";
 
+        public Config _config = new Config();
+        public CleanerHelper _cleanerHelper = new CleanerHelper();
+        public BackupHelper _backupHelper = new BackupHelper();
+        public AvailableMods _availableMods = new AvailableMods();
+        public InjectionHelper _injectionHelper = new InjectionHelper();
+
+        private string versionString = "v1.2.0";
+        public string newestVersion = "";
 
         public App()
         {
             InitializeComponent();
-            var _config = new Config();
+            InitStyle();
+           
             string configPath = _config.LoadConfig();
-            if (configPath != "")
+
+            if (configPath != "") //Check if LLBMM has been launched before, and if it has, check if mods are installed. if they are, add them to the installed mods list
             {
                 gameFolderPath.Text = configPath;
                 gameFolderPathString = configPath;
-                var _cleanerHelper = new CleanerHelper();
                 if (_cleanerHelper.CheckModStatus(gameFolderPathString) == true)
                 {
                     var installedModsList = _cleanerHelper.InstalledMods(gameFolderPathString);
                     installedMods.Items.Clear();
-                    foreach (var mod in installedModsList)
-                    {
-                        installedMods.Items.Add(mod);
-                    }
+                    foreach (var mod in installedModsList) installedMods.Items.Add(mod);
                 }
             }
 
-            string path = Directory.GetCurrentDirectory();
-            availableModsPath = path + @"\mods";
+            versionLabel.Text = "LLBMM is up to date: [ " + versionString + " ]";
+            CheckVersion();
 
-            if (!Directory.Exists(path + @"\mods"))
-            {
-                Directory.CreateDirectory(path + @"\mods");
-            }
 
-            var _getAvailableMods = new AvailableMods();
-            var availableModsFileList = _getAvailableMods.GetFrom(availableModsPath);
+            string LLBMMPath = Directory.GetCurrentDirectory();
+            availableModsPath = LLBMMPath + @"\mods";
+            Directory.CreateDirectory(availableModsPath);
 
-            foreach (string item in availableModsFileList)
-            {
-                var addmod = true;
-                var changedItem = item.Replace(availableModsPath + @"\", "");
-                var changedItem2 = StringBuilding.getBetweenStr(changedItem, @"\", ".dll");
-                foreach (var installedMod in installedMods.Items)
-                {
-                    if (changedItem2 == installedMod.ToString())
-                    {
-                        addmod = false;
-                    }
-                }
-
-                if (addmod == true)
-                {
-                    availableMods.Items.Add(changedItem2);
-                }
-            }
+            GetAvailableModsAndAddThemToAvailbleModsList();
 
             if (File.Exists(Directory.GetCurrentDirectory() + @"\Readme.rtf"))
             {
-                groupBox1.Text = "Mod Manager information";
-                richTextBox1.LoadFile(Directory.GetCurrentDirectory() + @"\Readme.rtf");
+                modInfoLabel.Text = "Mod Manager information";
+                readmeBox.LoadFile(Directory.GetCurrentDirectory() + @"\Readme.rtf");
             }
         }
 
@@ -81,81 +69,81 @@ namespace LLB_Mod_Manager
         {
             FolderBrowserDialog _LLBFolderFinder = new FolderBrowserDialog();
             _LLBFolderFinder.Description = "Please select the LLBlaze_Data folder in the root directory of Lethal League Blaze";
-            _LLBFolderFinder.SelectedPath = @"c:\";
+
+            if (_config.LoadConfig() == "") _LLBFolderFinder.SelectedPath = Directory.GetCurrentDirectory();
+            else _LLBFolderFinder.SelectedPath = _config.LoadConfig();
+
             if (_LLBFolderFinder.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                var _config = new Config();
                 _config.SaveConfig(_LLBFolderFinder.SelectedPath);
                 gameFolderPath.Text = _LLBFolderFinder.SelectedPath + dataFolderEnding;
                 gameFolderPathString = _LLBFolderFinder.SelectedPath + dataFolderEnding;
-                var _cleanerHelper = new CleanerHelper();
                 if (_cleanerHelper.CheckModStatus(gameFolderPathString) == true)
                 {
                     var installedModsList = _cleanerHelper.InstalledMods(gameFolderPathString);
                     installedMods.Items.Clear();
-                    foreach (var mod in installedModsList)
-                    {
-                        installedMods.Items.Add(mod);
-                    }
+                    foreach (var mod in installedModsList) installedMods.Items.Add(mod);
                 }
             }
         }
 
-        private void button6_Click(object sender, EventArgs e)
+        private void UninstallModsButton_Click(object sender, EventArgs e)
         {
-            var _BackupHelper = new BackupHelper();
-            if (_BackupHelper.DoBackup(gameFolderPathString) == true)
+            if (_cleanerHelper.CheckModStatus(gameFolderPathString) == true)
             {
-                var _CleanerHelper = new CleanerHelper();
-                if (_CleanerHelper.CheckModStatus(gameFolderPathString) == true)
+                var installedModsList = _cleanerHelper.InstalledMods(gameFolderPathString);
+                _cleanerHelper.RemoveMods(gameFolderPathString, installedModsList);
+                installedMods.Items.Clear();
+                GetAvailableModsAndAddThemToAvailbleModsList();
+                _cleanerHelper.CleanGameFolder(gameFolderPathString);
+
+                installedModsList = _cleanerHelper.InstalledMods(gameFolderPathString);
+                if (installedModsList.Count() > 0) foreach (string mod in installedModsList) installedMods.Items.Add(mod);
+                else
                 {
-                    var installedModsList = _CleanerHelper.InstalledMods(gameFolderPathString);
-                    _CleanerHelper.RemoveMods(gameFolderPathString, installedModsList);
-                    installedMods.Items.Clear();
-                    availableMods.Items.Clear();
+                    _cleanerHelper.RemoveMod(gameFolderPathString, "ModMenu");
+                    _backupHelper.RestoreBackup(gameFolderPathString);
+                    _backupHelper.DeleteBackup(gameFolderPathString);
+                }
+            } else _cleanerHelper.CleanGameFolder(gameFolderPathString);
+        }
 
-                    var _getAvailableMods = new AvailableMods();
-                    var availableModsFileList = _getAvailableMods.GetFrom(availableModsPath);
-                    foreach (string item in availableModsFileList)
+        private void uninstallSelectedModButton_Click(object sender, EventArgs e)
+        {
+            if (_cleanerHelper.CheckModStatus(gameFolderPathString) == true)
+            {
+                if (installedMods.SelectedItem != null)
+                {
+                    if (_cleanerHelper.RemoveMod(gameFolderPathString, installedMods.SelectedItem.ToString()))
                     {
-                        var addmod = true;
-                        var changedItem = item.Replace(availableModsPath + @"\", "");
-                        var changedItem2 = StringBuilding.getBetweenStr(changedItem, @"\", ".dll");
-                        foreach (var installedMod in installedMods.Items)
-                        {
-                            if (changedItem2 == installedMod.ToString())
-                            {
-                                addmod = false;
-                            }
-                        }
+                        availableMods.Items.Add(installedMods.SelectedItem);
+                        installedMods.Items.Remove(installedMods.SelectedItem);
 
-                        if (addmod == true)
+                        var installedModsList = _cleanerHelper.InstalledMods(gameFolderPathString);
+                        if (installedModsList.Count() == 0)
                         {
-                            availableMods.Items.Add(changedItem2);
+                            _cleanerHelper.RemoveMod(gameFolderPathString, "ModMenu");
+                            _backupHelper.RestoreBackup(gameFolderPathString);
+                            _backupHelper.DeleteBackup(gameFolderPathString);
                         }
                     }
                 }
             }
         }
 
-        private void availableMods_SelectedIndexChanged(object sender, EventArgs e)
+        private void AvailableMods_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (availableMods.SelectedItem != null)
             {
                 var selectedIndexName = availableMods.SelectedItem.ToString();
                 var selectedIndexReadmePath = availableModsPath + @"\" + availableMods.SelectedItem.ToString() + @"\" + availableMods.SelectedItem.ToString() + ".rtf";
-                groupBox1.Text = availableMods.SelectedItem.ToString() + " Readme";
-                if (File.Exists(selectedIndexReadmePath))
-                {
-                    richTextBox1.LoadFile(selectedIndexReadmePath);
-                } else
-                {
-                    richTextBox1.Text = "Mod has no readme file";
-                }
+                modInfoLabel.Text = availableMods.SelectedItem.ToString() + " Readme";
+                if (File.Exists(selectedIndexReadmePath)) readmeBox.LoadFile(selectedIndexReadmePath);
+                else readmeBox.Text = "Mod has no readme file";
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void sendToPendingModsButton_Click(object sender, EventArgs e)
         {
             if (availableMods.SelectedItem != null)
             {
@@ -164,7 +152,7 @@ namespace LLB_Mod_Manager
             }
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void returnFromPendingModsButton_Click(object sender, EventArgs e)
         {
             if (pendingMods.SelectedItem != null)
             {
@@ -173,139 +161,154 @@ namespace LLB_Mod_Manager
             }
         }
 
-        private void button2_Click_1(object sender, EventArgs e)
+        private void sendAllModsToPendingModsButton_Click(object sender, EventArgs e)
         {
             if (availableMods.Items.Count > 0)
             {
-                foreach (var item in availableMods.Items)
-                {
-                    pendingMods.Items.Add(item);
-                }
+                foreach (var item in availableMods.Items) pendingMods.Items.Add(item);
                 availableMods.Items.Clear();
             }
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void InstallModsButton_Click(object sender, EventArgs e)
         {
             var terminated = false;
-            if (pendingMods.Items.Count > 0)
+            if (pendingMods.Items.Count > 0) //If there are pending mods
             {
-                var _BackupHelper = new BackupHelper();
-                if (_BackupHelper.DoBackup(gameFolderPathString) == true)
+                var installedModsList = _cleanerHelper.InstalledMods(gameFolderPathString);
+                if (installedModsList == null) _backupHelper.DoBackup(gameFolderPathString);
+
+                if (_injectionHelper.InstallSelectedMods(gameFolderPathString, availableMods, pendingMods, installedMods) == true) //If we successfully combined the mod files into the assembly
                 {
-                    var _CleanerHelper = new CleanerHelper();
-                    if (_CleanerHelper.CheckModStatus(gameFolderPathString) == true)
-                    {
-                        var installedModsList = _CleanerHelper.InstalledMods(gameFolderPathString);
-                        //_CleanerHelper.RemoveMods(gameFolderPathString, installedModsList);
-                        var _InjectionHelper = new InjectionHelper();
-                        if (_InjectionHelper.CombineMods(gameFolderPathString, pendingMods.Items) == true)
-                        {
-                            var installedModsList2 = _CleanerHelper.InstalledMods(gameFolderPathString);
-                            if (installedModsList2 != null)
-                            {
-                                pendingMods.Items.Clear();
-                                foreach (var installedMod in installedMods.Items)
-                                {
-                                    availableMods.Items.Add(installedMod);
-                                }
-                                installedMods.Items.Clear();
-                                foreach (var mod in installedModsList2)
-                                {
-                                    installedMods.Items.Add(mod);
-                                }
-                            }
-                        } else
-                        {
-                            terminated = true;
-                        }
-                    } else
-                    {
-                        var _InjectionHelper = new InjectionHelper();
-                        if (_InjectionHelper.CombineMods(gameFolderPathString, pendingMods.Items) == true)
-                        { 
-                            var installedModsList = _CleanerHelper.InstalledMods(gameFolderPathString);
-                            if (installedModsList != null)
-                            {
-                                pendingMods.Items.Clear();
-                                foreach (var installedMod in installedMods.Items)
-                                {
-                                    availableMods.Items.Add(installedMod);
-                                }
-                                installedMods.Items.Clear();
-                                foreach (var mod in installedModsList)
-                                {
-                                    installedMods.Items.Add(mod);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            terminated = true;
-                        }
-                    }
-                } else
-                {
-                    terminated = true;
+                    installedModsList = _cleanerHelper.InstalledMods(gameFolderPathString); //get the installed mods
+                    installedMods.Items.Clear();
+                    foreach (var mod in installedModsList) { installedMods.Items.Add(mod); }  //Add them to the installed mods list
+                    pendingMods.Items.Clear(); //Clear the pending mods list
                 }
+                else terminated = true;
+            } else MessageBox.Show("You have no pending mods to install, please select mods from the available mods list before trying to install.", "Error");
+
+            if (terminated)
+            {
+                Debug.WriteLine("Terminated modding attempt. Trying to scrub mod files.");
+                if (_cleanerHelper.CleanGameFolder(gameFolderPathString) == true) {}
             } 
-
-            if (terminated == true)
-            {
-                Debug.WriteLine("Terminated session early");
-            } else
-            {
-                var injectionHelper = new InjectionHelper();
-                injectionHelper.DoRewrite(gameFolderPathString);
-            }
-
-
-
         }
 
-        private void pendingMods_SelectedIndexChanged(object sender, EventArgs e)
+        private void PendingMods_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (pendingMods.SelectedItem != null)
             {
                 var selectedIndexName = pendingMods.SelectedItem.ToString();
                 var selectedIndexReadmePath = availableModsPath + @"\" + pendingMods.SelectedItem.ToString() + @"\" + pendingMods.SelectedItem.ToString() + ".rtf";
-                groupBox1.Text = pendingMods.SelectedItem.ToString() + " Readme";
-                if (File.Exists(selectedIndexReadmePath))
-                {
-                    richTextBox1.LoadFile(selectedIndexReadmePath);
-                }
-                else
-                {
-                    richTextBox1.Text = "Mod has no readme file";
-                }
+                modInfoLabel.Text = pendingMods.SelectedItem.ToString() + " Readme";
+                if (File.Exists(selectedIndexReadmePath)) readmeBox.LoadFile(selectedIndexReadmePath);
+                else readmeBox.Text = "Mod has no readme file";
             }
         }
 
-        private void installedMods_SelectedIndexChanged(object sender, EventArgs e)
+        private void InstalledMods_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (installedMods.SelectedItem != null)
             {
                 var selectedIndexName = installedMods.SelectedItem.ToString();
                 var selectedIndexReadmePath = availableModsPath + @"\" + installedMods.SelectedItem.ToString() + @"\" + installedMods.SelectedItem.ToString() + ".rtf";
-                groupBox1.Text = installedMods.SelectedItem.ToString() + " Readme";
-                if (File.Exists(selectedIndexReadmePath))
-                {
-                    richTextBox1.LoadFile(selectedIndexReadmePath);
-                }
-                else
-                {
-                    richTextBox1.Text = "Mod has no readme file";
-                }
+                modInfoLabel.Text = installedMods.SelectedItem.ToString() + " Readme";
+                if (File.Exists(selectedIndexReadmePath)) readmeBox.LoadFile(selectedIndexReadmePath);
+                else readmeBox.Text = "Mod has no readme file";
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+
+        private void readmeButton_Click(object sender, EventArgs e)
         {
             if (File.Exists(Directory.GetCurrentDirectory() + @"\Readme.rtf"))
             {
-                groupBox1.Text = "Mod Manager information";
-                richTextBox1.LoadFile(Directory.GetCurrentDirectory() + @"\Readme.rtf");
+                modInfoLabel.Text = "Mod Manager information";
+                readmeBox.LoadFile(Directory.GetCurrentDirectory() + @"\Readme.rtf");
             }
         }
+
+        private void versionLabel_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://github.com/MrGentle/LLB-Mod-Manager/releases");
+        }
+
+        private void GetAvailableModsAndAddThemToAvailbleModsList()
+        {
+            var availableModsFileList = _availableMods.GetFrom(availableModsPath);
+            availableMods.Items.Clear();
+            foreach (string item in availableModsFileList) //Check what mods are available for installation, and which are already installed
+            {
+                var addmod = true;
+                var formatted = Path.GetFileNameWithoutExtension(item);
+                foreach (var installedMod in installedMods.Items) if (formatted == installedMod.ToString()) addmod = false;
+                if (addmod == true) availableMods.Items.Add(formatted);
+            }
+        }
+
+        private async Task CheckVersion()
+        {
+            var client = new GitHubClient(new ProductHeaderValue("LLB-Mod-Manager"));
+            var releases = await client.Repository.Release.GetAll("MrGentle", "LLB-Mod-Manager");
+            newestVersion = releases[0].TagName;
+
+            if (versionString != newestVersion)
+            {
+                versionLabel.Text = "LLBMM is outdated. Click here to update: [ " + versionString + " ] >> [ " + newestVersion + " ]";
+                versionLabel.BackColor = Color.Red;
+            }
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
+            try { HideCaret(readmeBox.Handle); } catch { }
+        }
+
+        private void InitStyle()
+        {
+            BackColor = Color.FromArgb(44, 44, 44);
+            availableMods.BackColor = Color.FromArgb(34, 34, 34);
+            installedMods.BackColor = Color.FromArgb(34, 34, 34);
+            pendingMods.BackColor = Color.FromArgb(34, 34, 34);
+            gameFolderPath.BackColor = Color.FromArgb(34, 34, 34);
+            readmeBox.BackColor = Color.FromArgb(34, 34, 34);
+            versionLabel.BackColor = Color.FromArgb(34, 34, 34);
+
+            availableModsLabel.BackColor = Color.FromArgb(231, 76, 60);
+            pendingModsLabel.BackColor = Color.FromArgb(231, 76, 60);
+            installedModsLabel.BackColor = Color.FromArgb(231, 76, 60);
+            modInfoLabel.BackColor = Color.FromArgb(231, 76, 60);
+            LabelGameLocation.BackColor = Color.FromArgb(231, 76, 60);
+
+            readmeButton.BackColor = Color.FromArgb(231, 76, 60);
+            readmeButton.FlatAppearance.BorderColor = Color.FromArgb(231, 76, 60);
+
+            sendAllModsToPendingModsButton.BackColor = Color.FromArgb(231, 76, 60);
+            sendAllModsToPendingModsButton.FlatAppearance.BorderColor = Color.FromArgb(231, 76, 60);
+
+            returnFromPendingModsButton.BackColor = Color.FromArgb(231, 76, 60);
+            returnFromPendingModsButton.FlatAppearance.BorderColor = Color.FromArgb(231, 76, 60);
+
+            BrowseButton.BackColor = Color.FromArgb(231, 76, 60);
+            BrowseButton.FlatAppearance.BorderColor = Color.FromArgb(231, 76, 60);
+
+            installModsButton.BackColor = Color.FromArgb(231, 76, 60);
+            installModsButton.FlatAppearance.BorderColor = Color.FromArgb(231, 76, 60);
+
+            uninstallModsButton.BackColor = Color.FromArgb(231, 76, 60);
+            uninstallModsButton.FlatAppearance.BorderColor = Color.FromArgb(231, 76, 60);
+
+            uninstallSelectedModButton.BackColor = Color.FromArgb(231, 76, 60);
+            uninstallSelectedModButton.FlatAppearance.BorderColor = Color.FromArgb(231, 76, 60);
+
+            sendToPendingModsButton.BackColor = Color.FromArgb(231, 76, 60);
+            sendToPendingModsButton.FlatAppearance.BorderColor = Color.FromArgb(231, 76, 60);
+
+        }
+
+        [DllImport("user32.dll", EntryPoint = "HideCaret")]
+        public static extern long HideCaret(IntPtr hwnd);
     }
 }

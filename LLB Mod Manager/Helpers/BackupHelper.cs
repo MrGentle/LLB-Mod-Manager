@@ -9,45 +9,51 @@ using System.Diagnostics;
 
 namespace LLB_Mod_Manager
 {
-    class BackupHelper
+    public class BackupHelper
     {
-        /// <summary>
-        /// Backs up the original game files
-        /// </summary>
-        /// <param name="gameDataFolder"></param>
-        /// <returns></returns>
-        public bool DoBackup(string gameDataFolder)
+        public void DoBackup(string gameDataFolder)
         {
             string assemblypath = gameDataFolder + @"\Managed\Assembly-CSharp.dll"; //Change paths after release
             string backupPath = gameDataFolder + @"\Managed\ModManagerBackup";
 
-
-
             if (File.Exists(assemblypath))
             {
-                if (!File.Exists(backupPath + @"\Assembly-CSharp-Backup.dll"))
+                if (File.Exists(backupPath + @"\Assembly-CSharp-Backup.dll")) File.Delete(backupPath + @"\Assembly-CSharp-Backup.dll");
+
+                try
                 {
-                    try
-                    {
-                        Directory.CreateDirectory(backupPath);
-                        File.Copy(assemblypath, backupPath + @"\Assembly-CSharp-Backup.dll");
-                    }
-                    catch
-                    {
-                        MessageBox.Show("Failed backup - could not create backup directory or could not copy the old assembly-csharp file", "Error");
-                        return false;
-                    }
-                } else
-                {
-                    Debug.WriteLine("Backup exists - skipping");
+                    Directory.CreateDirectory(backupPath);
+                    File.Copy(assemblypath, backupPath + @"\Assembly-CSharp-Backup.dll");
                 }
-            } else
+                catch
+                {
+                    MessageBox.Show("Failed backup - could not create backup directory or could not copy the old assembly-csharp file", "Error");
+                }
+            }
+        }
+
+        public void RestoreBackup(string gameDataFolder)
+        {
+            string backupPath = gameDataFolder + @"\Managed\ModManagerBackup";
+            if (File.Exists(backupPath + @"\Assembly-CSharp-Backup.dll"))
             {
-                MessageBox.Show("Failed backup - Specified game folder is wrong (Terminating modding session)", "Error");
-                return false;
+                File.Delete(gameDataFolder + @"\Managed\Assembly-CSharp.dll");
+                File.Copy(backupPath + @"\Assembly-CSharp-Backup.dll", gameDataFolder + @"\Managed\Assembly-CSharp.dll");
+            }
+        }
+
+        public void DeleteBackup(string gameDataFolder)
+        {
+            string backupPath = gameDataFolder + @"\Managed\ModManagerBackup";
+            if (File.Exists(backupPath + @"\Assembly-CSharp-Backup.dll"))
+            {
+                File.Delete(backupPath + @"\Assembly-CSharp-Backup.dll");
             }
 
-            return true;
+            if (Directory.Exists(gameDataFolder + @"\Managed\ModManagerBackup"))
+            {
+                Directory.Delete(gameDataFolder + @"\Managed\ModManagerBackup");
+            }
         }
 
     }

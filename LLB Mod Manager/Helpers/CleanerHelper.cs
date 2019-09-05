@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 namespace LLB_Mod_Manager
 {
-    class CleanerHelper
+    public class CleanerHelper
     {
         private AssemblyDefinition asmDef;
         private ModuleDefinition mainModule;
@@ -25,29 +25,22 @@ namespace LLB_Mod_Manager
         /// <returns>bool isModded</returns>
         public bool CheckModStatus(string _gameDataFolder)
         {
-            try
-            {
-                asmDef = AssemblyDefinition.ReadAssembly(_gameDataFolder + @"\Managed\Assembly-CSharp.dll");
-            } catch
+            try { asmDef = AssemblyDefinition.ReadAssembly(_gameDataFolder + @"\Managed\Assembly-CSharp.dll"); }
+            catch
             {
                 Debug.WriteLine("CleanerHelper.CheckModStatus: Could not find assembly");
                 return false;
             }
             mainModule = asmDef.MainModule;
             var isModded = false;
-            foreach(var type in mainModule.Types)
+            foreach (var type in mainModule.Types)
             {
                 if (type.Name == "Mods")
                 {
-                    isModded = true;
-                    Debug.WriteLine("Mod status: Modded");
+                    if (type.Methods.Count > 0) isModded = true;
                 }
             }
 
-            if (isModded == false)
-            {
-                Debug.WriteLine("Mod status: Clean");
-            }
             asmDef.Dispose();
             return isModded;
         }
@@ -59,29 +52,21 @@ namespace LLB_Mod_Manager
         /// <returns>String[] installedModList</returns>
         public IEnumerable<string> InstalledMods(string _gameDataFolder)
         {
-            try
-            {
-                asmDef = AssemblyDefinition.ReadAssembly(_gameDataFolder + @"\Managed\Assembly-CSharp.dll");
-            }
+            try { asmDef = AssemblyDefinition.ReadAssembly(_gameDataFolder + @"\Managed\Assembly-CSharp.dll"); }
             catch
             {
-                Debug.WriteLine("CleanerHelper.InstalledMods: Could not find assembly");
+                MessageBox.Show("Could not find main game assembly, vertify your gamefiles");
                 return null;
             }
             mainModule = asmDef.MainModule;
             TypeDefinition typeDef = null;
 
-            foreach (var type in mainModule.Types)
-            {
-                if (type.Name == "Mods")
-                {
-                    typeDef = type;
-                }
-            }
+            foreach (var type in mainModule.Types) if (type.Name == "Mods") typeDef = type;
 
             if (typeDef == null)
             {
                 Debug.WriteLine("CleanerHelper.InstalledMods: TypeDefinition in was null");
+                asmDef.Dispose();
                 return null;
             }
 
@@ -94,42 +79,141 @@ namespace LLB_Mod_Manager
                     installedModsList[counter] = field.Name;
                     counter++;
                 }
-            } else
+            }
+            else
             {
+                asmDef.Dispose();
                 return null;
             }
+
             asmDef.Dispose();
             return installedModsList;
         }
 
-        /// <summary>
-        /// Removes all mods from installation and deletes their files from the game folder
-        /// </summary>
-        /// <param name="_gameFolder"></param>
-        /// <param name="_modlist"></param>
+
         public void RemoveMods(string _gameDataFolder, IEnumerable<string> _modlist)
         {
-            foreach (var mod in _modlist)
-            {
-                if (File.Exists(_gameDataFolder + @"\Managed\" + mod.ToString() + ".dll"))
-                {
-                    File.Delete(_gameDataFolder + @"\Managed\" + mod.ToString() + ".dll");
-                    Debug.WriteLine("CleanerHelper.RemoveMods: Removed " + mod.ToString() + ".dll");
-                }
+            foreach (var mod in _modlist) RemoveMod(_gameDataFolder, mod);
+        }
 
-                if (Directory.Exists(_gameDataFolder + @"\Managed\" + mod.ToString() + "Resources"))
+
+        public bool RemoveMod(string _gameDataFolder, string mod)
+        {
+            //Injection information
+            string injectTypeName = "LLScreen.ScreenIntroTitle"; // What type to inject into in Assemby-CSharp
+            string injectMethodName = "CShowTitle"; // Method name in the type
+            string modMethodNames = "Initialize";
+
+            DefaultAssemblyResolver defaultAssemblyResolver = new DefaultAssemblyResolver();
+            defaultAssemblyResolver.AddSearchDirectory(_gameDataFolder + @"\Managed\");
+
+            ReaderParameters parameters = new ReaderParameters { AssemblyResolver = defaultAssemblyResolver };
+
+            try { asmDef = AssemblyDefinition.ReadAssembly(_gameDataFolder + @"\Managed\Assembly-CSharp.dll", parameters); }
+            catch
+            {
+                MessageBox.Show("Could not find main game assembly, vertify your gamefiles");
+                return false;
+            }
+
+            AssemblyDefinition modAsm = null;
+            try { modAsm = AssemblyDefinition.ReadAssembly(_gameDataFolder + "\\Managed\\" + mod + ".dll"); }
+            catch {}
+
+            TypeDefinition injectPointType = asmDef.MainModule.GetType(injectTypeName);
+            foreach (MethodDefinition method in injectPointType.Methods)
+            {
+                if (method.Name == injectMethodName)
                 {
-                    Directory.Delete(_gameDataFolder + @"\Managed\" + mod.ToString() + "Resources", true);
+                    try
+                    {
+                        ILProcessor ilproc = method.Body.GetILProcessor();
+                        if (ilproc.Body.Instructions.Count > 0)
+                        {
+                            foreach (TypeDefinition modTypeDef in modAsm.MainModule.Types)
+                            {
+                                foreach (MethodDefinition modMethodDef in modTypeDef.Methods)
+                                {
+                                    if (modMethodDef.Name == modMethodNames)
+                                    {
+                                        MethodReference callRef = asmDef.MainModule.ImportReference(modMethodDef);
+                                        Instruction destroy = null;
+                                        foreach (Instruction i in ilproc.Body.Instructions)
+                                        {
+                                            if (i.OpCode == OpCodes.Call && i.Operand.ToString() == callRef.ToString()) destroy = i;
+                                        }
+                                        ilproc.Remove(destroy);
+                                        modAsm.Dispose();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch {}
                 }
             }
 
-            if (File.Exists(_gameDataFolder + @"\Managed\ModManagerBackup\Assembly-CSharp-Backup.dll"))
+            //Remove from mods list
+            if (mod != "ModMenu")
+            {
+                mainModule = asmDef.MainModule;
+                TypeDefinition typeDef = null;
+
+                foreach (var type in mainModule.Types) if (type.Name == "Mods") typeDef = type;
+
+                FieldDefinition fieldToDelete = null;
+                foreach (var field in typeDef.Fields) if (field.Name == mod) fieldToDelete = field;
+
+                if (fieldToDelete != null) typeDef.Fields.Remove(fieldToDelete);
+            }
+            asmDef.Write(_gameDataFolder + @"\Managed\Assembly-CSharp-temp.dll");
+            asmDef.Dispose();
+
+            if (File.Exists(_gameDataFolder + @"\Managed\Assembly-CSharp-temp.dll"))
             {
                 File.Delete(_gameDataFolder + @"\Managed\Assembly-CSharp.dll");
-                File.Copy(_gameDataFolder + @"\Managed\ModManagerBackup\Assembly-CSharp-Backup.dll", _gameDataFolder + @"\Managed\Assembly-CSharp.dll");
-                MessageBox.Show("All mods have been removed", "");
+                File.Copy(_gameDataFolder + @"\Managed\Assembly-CSharp-temp.dll", _gameDataFolder + @"\Managed\Assembly-CSharp.dll");
+                File.Delete(_gameDataFolder + @"\Managed\Assembly-CSharp-temp.dll");
             }
 
+
+            if (Directory.Exists(_gameDataFolder + @"\Managed\" + mod + "Resources")) Directory.Delete(_gameDataFolder + @"\Managed\" + mod + "Resources", true);
+            if (File.Exists(_gameDataFolder + @"\Managed\" + mod + ".dll")) File.Delete(_gameDataFolder + @"\Managed\" + mod + ".dll");
+
+            return true;
+        }
+
+
+        public bool CleanGameFolder(string _gameDataFolder)
+        {
+            try
+            {
+                var bh = new BackupHelper();
+                bh.DeleteBackup(_gameDataFolder);
+
+                if (Directory.Exists(_gameDataFolder + @"\Managed\temp"))
+                {
+                    DirectoryInfo di = new DirectoryInfo(_gameDataFolder + @"\Managed\temp");
+                    foreach (DirectoryInfo dir in di.GetDirectories()) dir.Delete(true);
+                    foreach (FileInfo file in di.GetFiles()) file.Delete();
+                    Directory.Delete(_gameDataFolder + @"\Managed\temp");
+                }
+
+                foreach (string dirPath in Directory.GetDirectories(_gameDataFolder + "\\Managed", " * ", SearchOption.AllDirectories))
+                {
+                    if (dirPath.EndsWith("Resources"))
+                    {
+                        foreach (string f in Directory.GetFiles(dirPath)) File.Delete(f);
+                        Directory.Delete(dirPath);
+                    }
+                }
+
+                return true;
+            } catch
+            {
+                MessageBox.Show("Could not clean all mod files from folder. /nPlease go into the LLBlaze_Data\\Managed folder and check if there is a ModManagerBackup folder. If there is, delete the Assembly-CSharp file in Managed and copy the backup file over it and remove 'backup' from its name. /nAlso, delete the temp folder and any mod folders if they exist. /nEnsure that there is no ModMenu.dll present either.", "");
+                return false;
+            }
         }
     }
 }
