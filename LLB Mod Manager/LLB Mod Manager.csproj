@@ -76,7 +76,6 @@
     </Compile>
     <Compile Include="AvailableMods.cs" />
     <Compile Include="Helpers\InjectionHelper.cs" />
-    <Compile Include="Helpers\StringBuilding.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="App.resx">

@@ -14,7 +14,7 @@ namespace LLB_Mod_Manager
 {
     public class InjectionHelper
     {
-        public bool InstallSelectedMods(string _gameDataFolder, ListBox availableMods, ListBox pendingMods, ListBox installedMods)
+        public bool InstallSelectedMods(string _gameDataFolder, List<string> modsToInstall)
         {
             //LLBMM Paths
             string llbmm_rootDir = Directory.GetCurrentDirectory();
@@ -28,7 +28,7 @@ namespace LLB_Mod_Manager
             List<string> modsToInstallPaths = new List<string>(); //Will hold the file paths for the mods we recieved from the pendingMods ListBox.
 
             var i = 0;
-            var _modList = pendingMods.Items;
+            var _modList = modsToInstall;
             foreach (var mod in _modList) //Checks if a mods file exists and adds its path to a list if it does.
             {
                 string modPath = llbmm_modsDir + "\\" + mod.ToString() + @"\\" + mod.ToString() + ".dll";
@@ -36,8 +36,7 @@ namespace LLB_Mod_Manager
                 else
                 {
                     MessageBox.Show("Skipping " + mod + ". Can't find mod file at" + modPath + ". Please ensure that the file path matches the one in this window", "Error");
-                    availableMods.Items.Add(mod);
-                    pendingMods.Items.Remove(mod);
+                    modsToInstall.Remove(mod);
                 }
                 i++;
             }
@@ -56,8 +55,7 @@ namespace LLB_Mod_Manager
                 catch
                 {
                     MessageBox.Show("Skipping mod " + Path.GetFileNameWithoutExtension(path) + ". Could not copy mod file at" + path + " to temp folder", "Error");
-                    availableMods.Items.Add(Path.GetFileNameWithoutExtension(path));
-                    pendingMods.Items.Remove(Path.GetFileNameWithoutExtension(path));
+                    modsToInstall.Remove(Path.GetFileNameWithoutExtension(path));
                 }
             }
             if (!File.Exists(game_managedDir + "\\ModMenu.dll")) File.Copy(llbmm_rootDir + "\\ModMenu\\ModMenu.dll", game_tempDir + "\\ModMenu.dll"); //If modmenu isn't installed try to install it
@@ -103,8 +101,7 @@ namespace LLB_Mod_Manager
                     catch
                     {
                         MessageBox.Show("Skipping mod " + Path.GetFileNameWithoutExtension(path) +  ". Mod file " + path + " can't be injected", "Error");
-                        availableMods.Items.Add(Path.GetFileNameWithoutExtension(path));
-                        pendingMods.Items.Remove(Path.GetFileNameWithoutExtension(path));
+                        modsToInstall.Remove(Path.GetFileNameWithoutExtension(path));
                     }
                 }
             }
@@ -123,8 +120,7 @@ namespace LLB_Mod_Manager
                 moddedClass.Methods.Add(new MethodDefinition(".ctor", MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName, _mainFileMainModule.TypeSystem.Void));
             }
 
-            _modList = pendingMods.Items;
-            foreach (var mod in _modList) { moddedClass.Fields.Add(new FieldDefinition(mod.ToString(), FieldAttributes.Public, _mainFileMainModule.TypeSystem.String)); }
+            foreach (var mod in modsToInstall) { moddedClass.Fields.Add(new FieldDefinition(mod.ToString(), FieldAttributes.Public, _mainFileMainModule.TypeSystem.String)); }
 
             TypeDefinition injectPointType = _mainFileAssemblyDef.MainModule.GetType(injectTypeName);
             if (injectPointType == null || injectPointType.Methods == null)
@@ -183,7 +179,7 @@ namespace LLB_Mod_Manager
             _mainFileAssemblyDef.Dispose();
             foreach (var asm in _modAssemblyList) asm.Dispose();
 
-            foreach (var mod in pendingMods.Items)
+            foreach (var mod in modsToInstall)
             {
                 var path = game_tempDir + "\\" + mod + ".dll";
                 if (path != game_tempDir + @"\Assembly-CSharp.dll")
@@ -213,7 +209,7 @@ namespace LLB_Mod_Manager
                 File.Copy(game_tempDir + @"\Assembly-CSharp-modded.dll", game_mainAsmFile);
             }
 
-            foreach (var mod in pendingMods.Items)
+            foreach (var mod in modsToInstall)
             {
                 if (File.Exists(game_managedDir + "\\" + mod + "Resources\\ASMRewriter.exe"))
                 {

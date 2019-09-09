@@ -5,6 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using static System.Windows.Forms.ListBox;
+using Mono.Cecil;
+using Octokit;
+using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace LLB_Mod_Manager
 {
@@ -16,6 +20,64 @@ namespace LLB_Mod_Manager
                .Where(s => s.EndsWith(".dll") && !s.Contains("Resources")).ToList();
 
             return dllFiles;
+        }
+
+        public List<string> GetModInformation(string filePath, GitHubClient GitClient)
+        {
+            ///Returned list: Name, version, status
+            List<string> ret = new List<string>();
+            ret.Add(Path.GetFileNameWithoutExtension(filePath));
+
+            AssemblyDefinition asmDef = AssemblyDefinition.ReadAssembly(filePath);
+            string currentVer = "";
+            string repoOwner = "";
+            string repoName = "";
+            foreach (TypeDefinition t in asmDef.MainModule.Types)
+            {
+                foreach (FieldDefinition f in t.Fields)
+                {
+                    if (f.Name == "modVersion") currentVer = f.Constant.ToString();
+                    if (f.Name == "repositoryOwner") repoOwner = f.Constant.ToString();
+                    if (f.Name == "repositoryName") repoName = f.Constant.ToString();
+                }
+            }
+            asmDef.Dispose();
+
+            if (currentVer != "")
+            {
+                ret.Add(currentVer);
+
+                if (repoOwner != "" && repoName != "")
+                {
+                    string status = CheckModStatus(repoOwner, repoName, currentVer, GitClient);
+                    ret.Add(status);
+                } else ret.Add("??");
+            }
+            else
+            {
+                ret.Add("??");
+                ret.Add("??");
+            }
+
+            if (repoOwner != "" && repoName != "") ret.Add("https://github.com/" + repoOwner + "/" + repoName + "/releases");
+            else ret.Add("??");
+
+            return ret;
+        }
+
+        private string CheckModStatus(string repositoryOwner, string repositoryName, string currentVersion, GitHubClient GitClient)
+        {
+            Task<IReadOnlyList<Release>> releases = GitClient.Repository.Release.GetAll(repositoryOwner, repositoryName);
+            try
+            {
+                releases.Wait();
+                if (releases.Result[0].TagName != currentVersion) return "Outdated [Click]";
+                else return "Up to date";
+            }
+            catch (System.AggregateException)
+            {
+                return "GitAPI RateLimited";
+            }
         }
     }
 }

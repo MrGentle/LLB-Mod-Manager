@@ -35,5 +35,18 @@ namespace LLB_Mod_Manager
             return "";
         }
 
+        public string LoadGitToken()
+        {
+            if (!File.Exists(Directory.GetCurrentDirectory() + @"\token.txt")) { }
+            else
+            {
+                var token = File.OpenText(Directory.GetCurrentDirectory() + @"\token.txt");
+                var returnString = token.ReadLine();
+                token.Close();
+                return returnString;
+            }
+            return "";
+        }
+
     }
 }

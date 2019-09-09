@@ -32,22 +32,21 @@
             this.LabelGameLocation = new System.Windows.Forms.Label();
             this.gameFolderPath = new System.Windows.Forms.TextBox();
             this.BrowseButton = new System.Windows.Forms.Button();
-            this.availableMods = new System.Windows.Forms.ListBox();
-            this.installedMods = new System.Windows.Forms.ListBox();
-            this.sendToPendingModsButton = new System.Windows.Forms.Button();
-            this.returnFromPendingModsButton = new System.Windows.Forms.Button();
             this.availableModsLabel = new System.Windows.Forms.Label();
-            this.pendingModsLabel = new System.Windows.Forms.Label();
-            this.pendingMods = new System.Windows.Forms.ListBox();
             this.installedModsLabel = new System.Windows.Forms.Label();
             this.installModsButton = new System.Windows.Forms.Button();
             this.uninstallModsButton = new System.Windows.Forms.Button();
-            this.sendAllModsToPendingModsButton = new System.Windows.Forms.Button();
             this.readmeButton = new System.Windows.Forms.Button();
             this.readmeBox = new System.Windows.Forms.RichTextBox();
             this.modInfoLabel = new System.Windows.Forms.Label();
             this.uninstallSelectedModButton = new System.Windows.Forms.Button();
             this.versionLabel = new System.Windows.Forms.Label();
+            this.AvailableModsDGV = new System.Windows.Forms.DataGridView();
+            this.InstalledModsDGV = new System.Windows.Forms.DataGridView();
+            this.SelectAllButton = new System.Windows.Forms.Button();
+            this.DeselectAllButton = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.AvailableModsDGV)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.InstalledModsDGV)).BeginInit();
             this.SuspendLayout();
             // 
             // LabelGameLocation
@@ -67,7 +66,7 @@
             this.gameFolderPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gameFolderPath.ForeColor = System.Drawing.SystemColors.Control;
             this.gameFolderPath.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.gameFolderPath.Location = new System.Drawing.Point(15, 54);
+            this.gameFolderPath.Location = new System.Drawing.Point(15, 55);
             this.gameFolderPath.Name = "gameFolderPath";
             this.gameFolderPath.ReadOnly = true;
             this.gameFolderPath.ShortcutsEnabled = false;
@@ -83,7 +82,7 @@
             this.BrowseButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.BrowseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.BrowseButton.ForeColor = System.Drawing.SystemColors.Control;
-            this.BrowseButton.Location = new System.Drawing.Point(431, 54);
+            this.BrowseButton.Location = new System.Drawing.Point(431, 55);
             this.BrowseButton.Name = "BrowseButton";
             this.BrowseButton.Size = new System.Drawing.Size(84, 23);
             this.BrowseButton.TabIndex = 2;
@@ -91,96 +90,21 @@
             this.BrowseButton.UseVisualStyleBackColor = false;
             this.BrowseButton.Click += new System.EventHandler(this.BrowseButton_Click);
             // 
-            // availableMods
-            // 
-            this.availableMods.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.availableMods.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.availableMods.ForeColor = System.Drawing.SystemColors.Control;
-            this.availableMods.FormattingEnabled = true;
-            this.availableMods.ItemHeight = 15;
-            this.availableMods.Location = new System.Drawing.Point(15, 109);
-            this.availableMods.Name = "availableMods";
-            this.availableMods.Size = new System.Drawing.Size(212, 150);
-            this.availableMods.TabIndex = 3;
-            this.availableMods.SelectedIndexChanged += new System.EventHandler(this.AvailableMods_SelectedIndexChanged);
-            // 
-            // installedMods
-            // 
-            this.installedMods.BackColor = System.Drawing.Color.DimGray;
-            this.installedMods.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.installedMods.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.installedMods.ForeColor = System.Drawing.SystemColors.Control;
-            this.installedMods.FormattingEnabled = true;
-            this.installedMods.ItemHeight = 15;
-            this.installedMods.Location = new System.Drawing.Point(15, 321);
-            this.installedMods.Name = "installedMods";
-            this.installedMods.Size = new System.Drawing.Size(500, 150);
-            this.installedMods.TabIndex = 4;
-            this.installedMods.SelectedIndexChanged += new System.EventHandler(this.InstalledMods_SelectedIndexChanged);
-            // 
-            // sendToPendingModsButton
-            // 
-            this.sendToPendingModsButton.Cursor = System.Windows.Forms.Cursors.Default;
-            this.sendToPendingModsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.sendToPendingModsButton.ForeColor = System.Drawing.SystemColors.Control;
-            this.sendToPendingModsButton.Location = new System.Drawing.Point(233, 178);
-            this.sendToPendingModsButton.Name = "sendToPendingModsButton";
-            this.sendToPendingModsButton.Size = new System.Drawing.Size(63, 23);
-            this.sendToPendingModsButton.TabIndex = 5;
-            this.sendToPendingModsButton.Text = ">>";
-            this.sendToPendingModsButton.UseVisualStyleBackColor = true;
-            this.sendToPendingModsButton.Click += new System.EventHandler(this.sendToPendingModsButton_Click);
-            // 
-            // returnFromPendingModsButton
-            // 
-            this.returnFromPendingModsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.returnFromPendingModsButton.ForeColor = System.Drawing.SystemColors.Control;
-            this.returnFromPendingModsButton.Location = new System.Drawing.Point(233, 207);
-            this.returnFromPendingModsButton.Name = "returnFromPendingModsButton";
-            this.returnFromPendingModsButton.Size = new System.Drawing.Size(63, 23);
-            this.returnFromPendingModsButton.TabIndex = 6;
-            this.returnFromPendingModsButton.Text = "<<";
-            this.returnFromPendingModsButton.UseVisualStyleBackColor = true;
-            this.returnFromPendingModsButton.Click += new System.EventHandler(this.returnFromPendingModsButton_Click);
-            // 
             // availableModsLabel
             // 
-            this.availableModsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.availableModsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.availableModsLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.availableModsLabel.Location = new System.Drawing.Point(15, 89);
+            this.availableModsLabel.Location = new System.Drawing.Point(15, 103);
             this.availableModsLabel.Name = "availableModsLabel";
-            this.availableModsLabel.Size = new System.Drawing.Size(212, 17);
+            this.availableModsLabel.Size = new System.Drawing.Size(500, 17);
             this.availableModsLabel.TabIndex = 8;
             this.availableModsLabel.Text = "Available mods:";
             // 
-            // pendingModsLabel
-            // 
-            this.pendingModsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.pendingModsLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.pendingModsLabel.Location = new System.Drawing.Point(303, 89);
-            this.pendingModsLabel.Name = "pendingModsLabel";
-            this.pendingModsLabel.Size = new System.Drawing.Size(212, 17);
-            this.pendingModsLabel.TabIndex = 9;
-            this.pendingModsLabel.Text = "Mods to install:";
-            // 
-            // pendingMods
-            // 
-            this.pendingMods.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.pendingMods.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.pendingMods.ForeColor = System.Drawing.SystemColors.Control;
-            this.pendingMods.FormattingEnabled = true;
-            this.pendingMods.ItemHeight = 15;
-            this.pendingMods.Location = new System.Drawing.Point(303, 109);
-            this.pendingMods.Name = "pendingMods";
-            this.pendingMods.Size = new System.Drawing.Size(212, 150);
-            this.pendingMods.TabIndex = 10;
-            this.pendingMods.SelectedIndexChanged += new System.EventHandler(this.PendingMods_SelectedIndexChanged);
-            // 
             // installedModsLabel
             // 
-            this.installedModsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.installedModsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.installedModsLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.installedModsLabel.Location = new System.Drawing.Point(15, 301);
+            this.installedModsLabel.Location = new System.Drawing.Point(15, 329);
             this.installedModsLabel.Name = "installedModsLabel";
             this.installedModsLabel.Size = new System.Drawing.Size(500, 17);
             this.installedModsLabel.TabIndex = 11;
@@ -190,9 +114,9 @@
             // 
             this.installModsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.installModsButton.ForeColor = System.Drawing.SystemColors.Control;
-            this.installModsButton.Location = new System.Drawing.Point(303, 265);
+            this.installModsButton.Location = new System.Drawing.Point(227, 280);
             this.installModsButton.Name = "installModsButton";
-            this.installModsButton.Size = new System.Drawing.Size(212, 23);
+            this.installModsButton.Size = new System.Drawing.Size(288, 23);
             this.installModsButton.TabIndex = 13;
             this.installModsButton.Text = "Install Selected Mods";
             this.installModsButton.UseVisualStyleBackColor = true;
@@ -202,7 +126,7 @@
             // 
             this.uninstallModsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.uninstallModsButton.ForeColor = System.Drawing.SystemColors.Control;
-            this.uninstallModsButton.Location = new System.Drawing.Point(411, 477);
+            this.uninstallModsButton.Location = new System.Drawing.Point(412, 505);
             this.uninstallModsButton.Name = "uninstallModsButton";
             this.uninstallModsButton.Size = new System.Drawing.Size(103, 23);
             this.uninstallModsButton.TabIndex = 14;
@@ -210,23 +134,11 @@
             this.uninstallModsButton.UseVisualStyleBackColor = true;
             this.uninstallModsButton.Click += new System.EventHandler(this.UninstallModsButton_Click);
             // 
-            // sendAllModsToPendingModsButton
-            // 
-            this.sendAllModsToPendingModsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.sendAllModsToPendingModsButton.ForeColor = System.Drawing.SystemColors.Control;
-            this.sendAllModsToPendingModsButton.Location = new System.Drawing.Point(233, 236);
-            this.sendAllModsToPendingModsButton.Name = "sendAllModsToPendingModsButton";
-            this.sendAllModsToPendingModsButton.Size = new System.Drawing.Size(63, 23);
-            this.sendAllModsToPendingModsButton.TabIndex = 15;
-            this.sendAllModsToPendingModsButton.Text = "All >>";
-            this.sendAllModsToPendingModsButton.UseVisualStyleBackColor = true;
-            this.sendAllModsToPendingModsButton.Click += new System.EventHandler(this.sendAllModsToPendingModsButton_Click);
-            // 
             // readmeButton
             // 
             this.readmeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.readmeButton.ForeColor = System.Drawing.SystemColors.Control;
-            this.readmeButton.Location = new System.Drawing.Point(547, 477);
+            this.readmeButton.Location = new System.Drawing.Point(547, 505);
             this.readmeButton.Name = "readmeButton";
             this.readmeButton.Size = new System.Drawing.Size(500, 23);
             this.readmeButton.TabIndex = 1;
@@ -242,9 +154,10 @@
             this.readmeBox.Name = "readmeBox";
             this.readmeBox.ReadOnly = true;
             this.readmeBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.readmeBox.Size = new System.Drawing.Size(500, 436);
+            this.readmeBox.Size = new System.Drawing.Size(500, 464);
             this.readmeBox.TabIndex = 0;
             this.readmeBox.Text = "";
+            this.readmeBox.Enter += new System.EventHandler(this.readmeBox_Enter);
             // 
             // modInfoLabel
             // 
@@ -261,7 +174,7 @@
             // 
             this.uninstallSelectedModButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.uninstallSelectedModButton.ForeColor = System.Drawing.SystemColors.Control;
-            this.uninstallSelectedModButton.Location = new System.Drawing.Point(15, 477);
+            this.uninstallSelectedModButton.Location = new System.Drawing.Point(15, 505);
             this.uninstallSelectedModButton.Name = "uninstallSelectedModButton";
             this.uninstallSelectedModButton.Size = new System.Drawing.Size(390, 23);
             this.uninstallSelectedModButton.TabIndex = 17;
@@ -281,28 +194,85 @@
             this.versionLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.versionLabel.Click += new System.EventHandler(this.versionLabel_Click);
             // 
+            // AvailableModsDGV
+            // 
+            this.AvailableModsDGV.AllowUserToAddRows = false;
+            this.AvailableModsDGV.AllowUserToDeleteRows = false;
+            this.AvailableModsDGV.AllowUserToResizeColumns = false;
+            this.AvailableModsDGV.AllowUserToResizeRows = false;
+            this.AvailableModsDGV.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.AvailableModsDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.AvailableModsDGV.Location = new System.Drawing.Point(15, 123);
+            this.AvailableModsDGV.Name = "AvailableModsDGV";
+            this.AvailableModsDGV.ReadOnly = true;
+            this.AvailableModsDGV.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.AvailableModsDGV.RowHeadersVisible = false;
+            this.AvailableModsDGV.ShowEditingIcon = false;
+            this.AvailableModsDGV.Size = new System.Drawing.Size(500, 151);
+            this.AvailableModsDGV.TabIndex = 19;
+            this.AvailableModsDGV.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.AvailableModsDGV_CellContentClick);
+            // 
+            // InstalledModsDGV
+            // 
+            this.InstalledModsDGV.AllowUserToAddRows = false;
+            this.InstalledModsDGV.AllowUserToDeleteRows = false;
+            this.InstalledModsDGV.AllowUserToResizeColumns = false;
+            this.InstalledModsDGV.AllowUserToResizeRows = false;
+            this.InstalledModsDGV.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.InstalledModsDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.InstalledModsDGV.Location = new System.Drawing.Point(15, 349);
+            this.InstalledModsDGV.Name = "InstalledModsDGV";
+            this.InstalledModsDGV.ReadOnly = true;
+            this.InstalledModsDGV.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.InstalledModsDGV.RowHeadersVisible = false;
+            this.InstalledModsDGV.ShowEditingIcon = false;
+            this.InstalledModsDGV.Size = new System.Drawing.Size(500, 151);
+            this.InstalledModsDGV.TabIndex = 20;
+            this.InstalledModsDGV.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.InstalledModsDGV_CellContentClick);
+            // 
+            // SelectAllButton
+            // 
+            this.SelectAllButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.SelectAllButton.ForeColor = System.Drawing.SystemColors.Control;
+            this.SelectAllButton.Location = new System.Drawing.Point(15, 280);
+            this.SelectAllButton.Name = "SelectAllButton";
+            this.SelectAllButton.Size = new System.Drawing.Size(100, 23);
+            this.SelectAllButton.TabIndex = 21;
+            this.SelectAllButton.Text = "Select All";
+            this.SelectAllButton.UseVisualStyleBackColor = true;
+            this.SelectAllButton.Click += new System.EventHandler(this.SelectAllButton_Click);
+            // 
+            // DeselectAllButton
+            // 
+            this.DeselectAllButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.DeselectAllButton.ForeColor = System.Drawing.SystemColors.Control;
+            this.DeselectAllButton.Location = new System.Drawing.Point(121, 280);
+            this.DeselectAllButton.Name = "DeselectAllButton";
+            this.DeselectAllButton.Size = new System.Drawing.Size(100, 23);
+            this.DeselectAllButton.TabIndex = 22;
+            this.DeselectAllButton.Text = "Deselect All";
+            this.DeselectAllButton.UseVisualStyleBackColor = true;
+            this.DeselectAllButton.Click += new System.EventHandler(this.DeselectAllButton_Click);
+            // 
             // App
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.ClientSize = new System.Drawing.Size(1064, 510);
+            this.ClientSize = new System.Drawing.Size(1062, 540);
+            this.Controls.Add(this.DeselectAllButton);
+            this.Controls.Add(this.SelectAllButton);
+            this.Controls.Add(this.InstalledModsDGV);
+            this.Controls.Add(this.AvailableModsDGV);
             this.Controls.Add(this.versionLabel);
             this.Controls.Add(this.uninstallSelectedModButton);
             this.Controls.Add(this.modInfoLabel);
             this.Controls.Add(this.readmeBox);
             this.Controls.Add(this.readmeButton);
-            this.Controls.Add(this.sendAllModsToPendingModsButton);
             this.Controls.Add(this.uninstallModsButton);
             this.Controls.Add(this.installModsButton);
             this.Controls.Add(this.installedModsLabel);
-            this.Controls.Add(this.pendingMods);
-            this.Controls.Add(this.pendingModsLabel);
             this.Controls.Add(this.availableModsLabel);
-            this.Controls.Add(this.returnFromPendingModsButton);
-            this.Controls.Add(this.sendToPendingModsButton);
-            this.Controls.Add(this.installedMods);
-            this.Controls.Add(this.availableMods);
             this.Controls.Add(this.BrowseButton);
             this.Controls.Add(this.gameFolderPath);
             this.Controls.Add(this.LabelGameLocation);
@@ -314,6 +284,8 @@
             this.Name = "App";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "LLB Mod Manager";
+            ((System.ComponentModel.ISupportInitialize)(this.AvailableModsDGV)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.InstalledModsDGV)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -324,22 +296,19 @@
         private System.Windows.Forms.Label LabelGameLocation;
         private System.Windows.Forms.TextBox gameFolderPath;
         private System.Windows.Forms.Button BrowseButton;
-        public System.Windows.Forms.ListBox availableMods;
-        public System.Windows.Forms.ListBox installedMods;
-        private System.Windows.Forms.Button sendToPendingModsButton;
-        private System.Windows.Forms.Button returnFromPendingModsButton;
         private System.Windows.Forms.Label availableModsLabel;
-        private System.Windows.Forms.Label pendingModsLabel;
-        public System.Windows.Forms.ListBox pendingMods;
         private System.Windows.Forms.Label installedModsLabel;
         private System.Windows.Forms.Button installModsButton;
         private System.Windows.Forms.Button uninstallModsButton;
-        private System.Windows.Forms.Button sendAllModsToPendingModsButton;
         private System.Windows.Forms.Button readmeButton;
         private System.Windows.Forms.RichTextBox readmeBox;
         private System.Windows.Forms.Label modInfoLabel;
         private System.Windows.Forms.Button uninstallSelectedModButton;
         private System.Windows.Forms.Label versionLabel;
+        private System.Windows.Forms.DataGridView AvailableModsDGV;
+        private System.Windows.Forms.DataGridView InstalledModsDGV;
+        private System.Windows.Forms.Button SelectAllButton;
+        private System.Windows.Forms.Button DeselectAllButton;
     }
 }
 
