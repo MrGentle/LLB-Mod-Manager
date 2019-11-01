@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using static System.Windows.Forms.ListBox;
 using System.IO;
 using System.Diagnostics;
 using System.Windows.Forms;
@@ -18,11 +13,6 @@ namespace LLB_Mod_Manager
         private ModuleDefinition mainModule;
 
 
-        /// <summary>
-        /// Checks If the game is modded
-        /// </summary>
-        /// <param name="_gameFolder"></param>
-        /// <returns>bool isModded</returns>
         public bool CheckModStatus(string _gameDataFolder)
         {
             try { asmDef = AssemblyDefinition.ReadAssembly(_gameDataFolder + @"\Managed\Assembly-CSharp.dll"); }
@@ -45,18 +35,14 @@ namespace LLB_Mod_Manager
             return isModded;
         }
 
-        /// <summary>
-        /// Checks what mods are installed
-        /// </summary>
-        /// <param name="_gameFolder"></param>
-        /// <returns>String[] installedModList</returns>
-        public IEnumerable<string> InstalledMods(string _gameDataFolder)
+
+        public List<string> InstalledMods(string _gameDataFolder)
         {
+            List<string> installedModsList = new List<string>();
             try { asmDef = AssemblyDefinition.ReadAssembly(_gameDataFolder + @"\Managed\Assembly-CSharp.dll"); }
             catch
             {
-                MessageBox.Show("Could not find main game assembly, vertify your gamefiles");
-                return null;
+                return installedModsList; ;
             }
             mainModule = asmDef.MainModule;
             TypeDefinition typeDef = null;
@@ -67,31 +53,18 @@ namespace LLB_Mod_Manager
             {
                 Debug.WriteLine("CleanerHelper.InstalledMods: TypeDefinition in was null");
                 asmDef.Dispose();
-                return null;
+                return installedModsList;
             }
 
-            var counter = 0;
-            String[] installedModsList = new String[typeDef.Fields.Count];
-            if (typeDef != null)
-            {
-                foreach (var field in typeDef.Fields)
-                {
-                    installedModsList[counter] = field.Name;
-                    counter++;
-                }
-            }
-            else
-            {
-                asmDef.Dispose();
-                return null;
-            }
+            if (typeDef != null) foreach (var field in typeDef.Fields) installedModsList.Add(field.Name);
+            else asmDef.Dispose();
 
             asmDef.Dispose();
             return installedModsList;
         }
 
 
-        public void RemoveMods(string _gameDataFolder, IEnumerable<string> _modlist)
+        public void RemoveMods(string _gameDataFolder, List<string> _modlist)
         {
             foreach (var mod in _modlist) RemoveMod(_gameDataFolder, mod);
         }
@@ -165,7 +138,8 @@ namespace LLB_Mod_Manager
                 foreach (var field in typeDef.Fields) if (field.Name == mod) fieldToDelete = field;
 
                 if (fieldToDelete != null) typeDef.Fields.Remove(fieldToDelete);
-            }
+            } else modAsm.Dispose();
+
             asmDef.Write(_gameDataFolder + @"\Managed\Assembly-CSharp-temp.dll");
             asmDef.Dispose();
 
@@ -211,7 +185,7 @@ namespace LLB_Mod_Manager
                 return true;
             } catch
             {
-                MessageBox.Show("Could not clean all mod files from folder. /nPlease go into the LLBlaze_Data\\Managed folder and check if there is a ModManagerBackup folder. If there is, delete the Assembly-CSharp file in Managed and copy the backup file over it and remove 'backup' from its name. /nAlso, delete the temp folder and any mod folders if they exist. /nEnsure that there is no ModMenu.dll present either.", "");
+                MessageBox.Show("Could not clean all mod files from folder. Please go into the LLBlaze_Data\\Managed folder and check if there is a ModManagerBackup folder. If there is, delete the Assembly-CSharp file in Managed and copy the backup file over it and remove 'backup' from its name. Also, delete the temp folder and any mod folders if they exist. Ensure that there is no ModMenu.dll present either.", "");
                 return false;
             }
         }

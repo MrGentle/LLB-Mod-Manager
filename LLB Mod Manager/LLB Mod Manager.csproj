@@ -36,6 +36,9 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>LLBMMIco.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Cecil, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
       <HintPath>..\packages\Mono.Cecil.0.10.0\lib\net40\Mono.Cecil.dll</HintPath>
@@ -74,7 +77,7 @@
     <Compile Include="App.Designer.cs">
       <DependentUpon>App.cs</DependentUpon>
     </Compile>
-    <Compile Include="AvailableMods.cs" />
+    <Compile Include="Helpers\AvailableMods.cs" />
     <Compile Include="Helpers\InjectionHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -91,7 +94,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="packages.config" />
+    <None Include="config\packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -103,7 +106,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="config\App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="LLBMMIco.ico" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

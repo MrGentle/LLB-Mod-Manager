@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.ListBox;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+
 
 namespace LLB_Mod_Manager
 {
@@ -62,7 +60,7 @@ namespace LLB_Mod_Manager
             else
             {
                 byte[] past = File.ReadAllBytes(game_managedDir + "\\ModMenu.dll");
-                byte[] present = File.ReadAllBytes(llbmm_rootDir + "\\ModMenu\\ModMenu.dll");
+                byte[] present = File.ReadAllBytes(llbmm_rootDir + "\\ModMenu\\ModMenu.dll"); 
 
                 if (past.Length != present.Length)
                 { 
@@ -235,10 +233,29 @@ namespace LLB_Mod_Manager
             return true;
         }
 
-        /// <summary>
-        /// Runs all the ASMRewriter files that ships with the mods. These files apply small changes to the assembly so that the mod can gain access to the classes, methods and fields it needs
-        /// </summary>
-        /// <param name="_gameFolder"></param>
+
+        public void RefreshInstalledMods(string _gameFolder, List<string> installedMods)
+        {
+            string managedFolder = _gameFolder + "\\Managed\\";
+            string modsFolder = Directory.GetCurrentDirectory() + "\\mods\\";
+            foreach(string mod in installedMods)
+            {
+                if (File.Exists(managedFolder + mod + ".dll") && File.Exists(modsFolder + mod + "\\" + mod + ".dll"))
+                {
+                    File.Delete(managedFolder + mod + ".dll");
+                    File.Copy(modsFolder + mod + "\\" + mod + ".dll", managedFolder + mod + ".dll");
+
+                    if (Directory.Exists(managedFolder + mod + "Resources") && Directory.Exists(modsFolder + mod + "\\" + mod + "Resources"))
+                    {
+                        foreach (string f in Directory.GetFiles(managedFolder + mod + "Resources")) File.Delete(f);
+                        foreach (string dirPath in Directory.GetDirectories(modsFolder + mod + "\\" + mod + "Resources", "*", SearchOption.AllDirectories)) Directory.CreateDirectory(dirPath.Replace(modsFolder + mod + "\\" + mod + "Resources", managedFolder + mod + "Resources"));
+                        foreach (string newPath in Directory.GetFiles(modsFolder + mod + "\\" + mod + "Resources", "*.*", SearchOption.AllDirectories)) File.Copy(newPath, newPath.Replace(modsFolder + mod + "\\" + mod + "Resources", managedFolder +  mod + "Resources"), true);
+                    }
+                }
+            }
+        }
+
+
         public void DoRewrite(string _gameFolder)
         {
             //Run all ASMRewriters
