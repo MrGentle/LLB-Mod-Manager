@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using static System.Windows.Forms.ListBox;
 using System.IO;
 using System.Diagnostics;
 using System.Windows.Forms;
@@ -18,14 +13,9 @@ namespace LLB_Mod_Manager
         private ModuleDefinition mainModule;
 
 
-        /// <summary>
-        /// Checks If the game is modded
-        /// </summary>
-        /// <param name="_gameFolder"></param>
-        /// <returns>bool isModded</returns>
         public bool CheckModStatus(string _gameDataFolder)
         {
-            try { asmDef = AssemblyDefinition.ReadAssembly(_gameDataFolder + @"\Managed\Assembly-CSharp.dll"); }
+            try { asmDef = AssemblyDefinition.ReadAssembly(_gameDataFolder + @"\LLBlaze_Data\Managed\Assembly-CSharp.dll"); }
             catch
             {
                 Debug.WriteLine("CleanerHelper.CheckModStatus: Could not find assembly");
@@ -45,18 +35,14 @@ namespace LLB_Mod_Manager
             return isModded;
         }
 
-        /// <summary>
-        /// Checks what mods are installed
-        /// </summary>
-        /// <param name="_gameFolder"></param>
-        /// <returns>String[] installedModList</returns>
-        public IEnumerable<string> InstalledMods(string _gameDataFolder)
+
+        public List<string> InstalledMods(string _gameDataFolder)
         {
-            try { asmDef = AssemblyDefinition.ReadAssembly(_gameDataFolder + @"\Managed\Assembly-CSharp.dll"); }
+            List<string> installedModsList = new List<string>();
+            try { asmDef = AssemblyDefinition.ReadAssembly(_gameDataFolder + @"\LLBlaze_Data\Managed\Assembly-CSharp.dll"); }
             catch
             {
-                MessageBox.Show("Could not find main game assembly, vertify your gamefiles");
-                return null;
+                return installedModsList; ;
             }
             mainModule = asmDef.MainModule;
             TypeDefinition typeDef = null;
@@ -67,31 +53,18 @@ namespace LLB_Mod_Manager
             {
                 Debug.WriteLine("CleanerHelper.InstalledMods: TypeDefinition in was null");
                 asmDef.Dispose();
-                return null;
+                return installedModsList;
             }
 
-            var counter = 0;
-            String[] installedModsList = new String[typeDef.Fields.Count];
-            if (typeDef != null)
-            {
-                foreach (var field in typeDef.Fields)
-                {
-                    installedModsList[counter] = field.Name;
-                    counter++;
-                }
-            }
-            else
-            {
-                asmDef.Dispose();
-                return null;
-            }
+            if (typeDef != null) foreach (var field in typeDef.Fields) installedModsList.Add(field.Name);
+            else asmDef.Dispose();
 
             asmDef.Dispose();
             return installedModsList;
         }
 
 
-        public void RemoveMods(string _gameDataFolder, IEnumerable<string> _modlist)
+        public void RemoveMods(string _gameDataFolder, List<string> _modlist)
         {
             foreach (var mod in _modlist) RemoveMod(_gameDataFolder, mod);
         }
@@ -105,19 +78,19 @@ namespace LLB_Mod_Manager
             string modMethodNames = "Initialize";
 
             DefaultAssemblyResolver defaultAssemblyResolver = new DefaultAssemblyResolver();
-            defaultAssemblyResolver.AddSearchDirectory(_gameDataFolder + @"\Managed\");
+            defaultAssemblyResolver.AddSearchDirectory(_gameDataFolder + @"\LLBlaze_Data\Managed\");
 
             ReaderParameters parameters = new ReaderParameters { AssemblyResolver = defaultAssemblyResolver };
 
-            try { asmDef = AssemblyDefinition.ReadAssembly(_gameDataFolder + @"\Managed\Assembly-CSharp.dll", parameters); }
+            try { asmDef = AssemblyDefinition.ReadAssembly(_gameDataFolder + @"\LLBlaze_Data\Managed\Assembly-CSharp.dll", parameters); }
             catch
             {
-                MessageBox.Show("Could not find main game assembly, vertify your gamefiles");
+                MessageBox.Show("Could not find main game assembly, verify your gamefiles");
                 return false;
             }
 
             AssemblyDefinition modAsm = null;
-            try { modAsm = AssemblyDefinition.ReadAssembly(_gameDataFolder + "\\Managed\\" + mod + ".dll"); }
+            try { modAsm = AssemblyDefinition.ReadAssembly(_gameDataFolder + @"\LLBlaze_Data\Managed\" + mod + ".dll"); }
             catch {}
 
             TypeDefinition injectPointType = asmDef.MainModule.GetType(injectTypeName);
@@ -165,20 +138,21 @@ namespace LLB_Mod_Manager
                 foreach (var field in typeDef.Fields) if (field.Name == mod) fieldToDelete = field;
 
                 if (fieldToDelete != null) typeDef.Fields.Remove(fieldToDelete);
-            }
-            asmDef.Write(_gameDataFolder + @"\Managed\Assembly-CSharp-temp.dll");
+            } else modAsm.Dispose();
+
+            asmDef.Write(_gameDataFolder + @"\LLBlaze_Data\Managed\Assembly-CSharp-temp.dll");
             asmDef.Dispose();
 
-            if (File.Exists(_gameDataFolder + @"\Managed\Assembly-CSharp-temp.dll"))
+            if (File.Exists(_gameDataFolder + @"\LLBlaze_Data\Managed\Assembly-CSharp-temp.dll"))
             {
-                File.Delete(_gameDataFolder + @"\Managed\Assembly-CSharp.dll");
-                File.Copy(_gameDataFolder + @"\Managed\Assembly-CSharp-temp.dll", _gameDataFolder + @"\Managed\Assembly-CSharp.dll");
-                File.Delete(_gameDataFolder + @"\Managed\Assembly-CSharp-temp.dll");
+                File.Delete(_gameDataFolder + @"\LLBlaze_Data\Managed\Assembly-CSharp.dll");
+                File.Copy(_gameDataFolder + @"\LLBlaze_Data\Managed\Assembly-CSharp-temp.dll", _gameDataFolder + @"\LLBlaze_Data\Managed\Assembly-CSharp.dll");
+                File.Delete(_gameDataFolder + @"\LLBlaze_Data\Managed\Assembly-CSharp-temp.dll");
             }
 
 
-            if (Directory.Exists(_gameDataFolder + @"\Managed\" + mod + "Resources")) Directory.Delete(_gameDataFolder + @"\Managed\" + mod + "Resources", true);
-            if (File.Exists(_gameDataFolder + @"\Managed\" + mod + ".dll")) File.Delete(_gameDataFolder + @"\Managed\" + mod + ".dll");
+            if (Directory.Exists(_gameDataFolder + @"\LLBlaze_Data\Managed\" + mod + "Resources")) Directory.Delete(_gameDataFolder + @"\LLBlaze_Data\Managed\" + mod + "Resources", true);
+            if (File.Exists(_gameDataFolder + @"\LLBlaze_Data\Managed\" + mod + ".dll")) File.Delete(_gameDataFolder + @"\LLBlaze_Data\Managed\" + mod + ".dll");
 
             return true;
         }
@@ -191,15 +165,15 @@ namespace LLB_Mod_Manager
                 var bh = new BackupHelper();
                 bh.DeleteBackup(_gameDataFolder);
 
-                if (Directory.Exists(_gameDataFolder + @"\Managed\temp"))
+                if (Directory.Exists(_gameDataFolder + @"\LLBlaze_Data\Managed\temp"))
                 {
-                    DirectoryInfo di = new DirectoryInfo(_gameDataFolder + @"\Managed\temp");
+                    DirectoryInfo di = new DirectoryInfo(_gameDataFolder + @"\LLBlaze_Data\Managed\temp");
                     foreach (DirectoryInfo dir in di.GetDirectories()) dir.Delete(true);
                     foreach (FileInfo file in di.GetFiles()) file.Delete();
-                    Directory.Delete(_gameDataFolder + @"\Managed\temp");
+                    Directory.Delete(_gameDataFolder + @"\LLBlaze_Data\Managed\temp");
                 }
 
-                foreach (string dirPath in Directory.GetDirectories(_gameDataFolder + "\\Managed", " * ", SearchOption.AllDirectories))
+                foreach (string dirPath in Directory.GetDirectories(_gameDataFolder + @"\LLBlaze_Data\Managed", " * ", SearchOption.AllDirectories))
                 {
                     if (dirPath.EndsWith("Resources"))
                     {
@@ -211,7 +185,7 @@ namespace LLB_Mod_Manager
                 return true;
             } catch
             {
-                MessageBox.Show("Could not clean all mod files from folder. /nPlease go into the LLBlaze_Data\\Managed folder and check if there is a ModManagerBackup folder. If there is, delete the Assembly-CSharp file in Managed and copy the backup file over it and remove 'backup' from its name. /nAlso, delete the temp folder and any mod folders if they exist. /nEnsure that there is no ModMenu.dll present either.", "");
+                MessageBox.Show("Could not clean all mod files from folder. Please go into the LLBlaze_Data\\Managed folder and check if there is a ModManagerBackup folder. If there is, delete the Assembly-CSharp file in Managed and copy the backup file over it and remove 'backup' from its name. Also, delete the temp folder and any mod folders if they exist. Ensure that there is no ModMenu.dll present either.", "");
                 return false;
             }
         }

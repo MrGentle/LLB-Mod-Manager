@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
@@ -27,10 +24,9 @@ namespace LLB_Mod_Manager
         public InjectionHelper _injectionHelper = new InjectionHelper();
 
         public GitHubClient GitClient = new GitHubClient(new ProductHeaderValue("LLBMM"));
-
         public Dictionary<string, List<string>> modsInformation = new Dictionary<string, List<string>>();
 
-        private string versionString = "v1.2.6";
+        private string versionString = "v1.3.0";
         public string newestVersion = "";
 
         public App()
@@ -40,6 +36,8 @@ namespace LLB_Mod_Manager
             InitStyle(); //Visual stuff
             InitConfig(); //Grab Configs and set paths
 
+            InitToolTip();
+
             CheckVersion(); //Check if LLBMM is the latest version
 
             SetupInstalledModsDGV();
@@ -47,6 +45,8 @@ namespace LLB_Mod_Manager
 
             SetupAvailableModsDGV();
             GetAvailableModsAndAddThemToAvailbleModsList();
+
+            ResizeWindow();
         }
 
         private void SetupAvailableModsDGV()
@@ -115,7 +115,7 @@ namespace LLB_Mod_Manager
                     foreach (KeyValuePair<string, List<string>> keyVal in modsInformation) if (keyVal.Key == mod) alreadyAdded = true;
                     if (!alreadyAdded)
                     {
-                        List<string> modInfo = _availableMods.GetModInformation(gameFolderPathString + "\\Managed\\" + mod + ".dll", GitClient);
+                        List<string> modInfo = _availableMods.GetModInformation(gameFolderPathString + @"\LLBlaze_Data\Managed\" + mod + ".dll", GitClient);
                         modsInformation.Add(Path.GetFileNameWithoutExtension(mod), modInfo);
                         InstalledModsDGV.Rows.Add(modInfo[0], modInfo[1], modInfo[2]);
                     }
@@ -183,10 +183,13 @@ namespace LLB_Mod_Manager
             installedModsLabel.BackColor = Color.FromArgb(231, 76, 60);
             modInfoLabel.BackColor = Color.FromArgb(231, 76, 60);
             LabelGameLocation.BackColor = Color.FromArgb(231, 76, 60);
+            showReadmeLabel.BackColor = Color.FromArgb(231, 76, 60);
 
             readmeButton.BackColor = Color.FromArgb(231, 76, 60);
             readmeButton.FlatAppearance.BorderColor = Color.FromArgb(231, 76, 60);
 
+            stepByStepGuideButton.BackColor = Color.FromArgb(231, 76, 60);
+            stepByStepGuideButton.FlatAppearance.BorderColor = Color.FromArgb(231, 76, 60);
 
             BrowseButton.BackColor = Color.FromArgb(231, 76, 60);
             BrowseButton.FlatAppearance.BorderColor = Color.FromArgb(231, 76, 60);
@@ -205,15 +208,23 @@ namespace LLB_Mod_Manager
 
             uninstallSelectedModButton.BackColor = Color.FromArgb(231, 76, 60);
             uninstallSelectedModButton.FlatAppearance.BorderColor = Color.FromArgb(231, 76, 60);
+
+            refreshInstalledModsButton.BackColor = Color.FromArgb(231, 76, 60);
+            refreshInstalledModsButton.FlatAppearance.BorderColor = Color.FromArgb(231, 76, 60);
         }
 
         private void InitConfig()
         {
-            string configPath = _config.LoadConfig();
-            if (configPath != "")
+            List<string> configPath = _config.LoadConfig();
+            if (configPath[0].Contains(@"\LLBlaze_Data")) MessageBox.Show("LLBMM has detected that you have LLBlaze_Data as your selected game folder. This version requires you to set your selected folder to LLBlaze instead. (The folder containing the exe)", "Warning");
+
+            if (configPath.Count > 0)
             {
-                gameFolderPath.Text = configPath;
-                gameFolderPathString = configPath;
+                gameFolderPath.Text = configPath[0];
+                gameFolderPathString = configPath[0];
+                if (configPath[1] == "True") showReadmeCheckbox.Checked = true;
+                else showReadmeCheckbox.Checked = false;
+                ResizeWindow();
             }
 
             string LLBMMPath = Directory.GetCurrentDirectory();
@@ -230,21 +241,41 @@ namespace LLB_Mod_Manager
             if (token != "") { GitClient.Credentials = new Credentials(token); Debug.WriteLine("Loaded token " + token); }
         }
 
+        private void InitToolTip()
+        {
+            ToolTip TT = new ToolTip();
+
+            TT.AutoPopDelay = 5000;
+            TT.InitialDelay = 1000;
+            TT.ReshowDelay = 500;
+
+            TT.ShowAlways = true;
+
+            TT.SetToolTip(installModsButton, "Install every mod checked for installation");
+            TT.SetToolTip(refreshInstalledModsButton, "Reinstalls the Resource and .dll files for every installed mod without having to inject code or reinstall ASMRewriters");
+            TT.SetToolTip(uninstallSelectedModButton, "Uninstall every mod checked for removal");
+            TT.SetToolTip(uninstallModsButton, "Uninstall every mod including ModMenu");
+            TT.SetToolTip(stepByStepGuideButton, "Opens the step by step mod creation doc in a browser");
+            TT.SetToolTip(readmeButton, "Shows the LLBMM instructions in the readme window");
+        }
+
         private void BrowseButton_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog _LLBFolderFinder = new FolderBrowserDialog();
-            _LLBFolderFinder.Description = "Please select the LLBlaze_Data folder in the root directory of Lethal League Blaze";
+            _LLBFolderFinder.Description = "Please select the LLBlaze folder (The folder where the .exe is located)";
 
-            if (_config.LoadConfig() == "") _LLBFolderFinder.SelectedPath = Directory.GetCurrentDirectory();
-            else _LLBFolderFinder.SelectedPath = _config.LoadConfig();
+            if (_config.LoadConfig().Count == 0) _LLBFolderFinder.SelectedPath = Directory.GetCurrentDirectory();
+            else _LLBFolderFinder.SelectedPath = _config.LoadConfig()[0];
 
             if (_LLBFolderFinder.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                _config.SaveConfig(_LLBFolderFinder.SelectedPath);
+                if (!File.Exists(_LLBFolderFinder.SelectedPath + @"\LLBlaze.exe")) MessageBox.Show("The selected directory does not contain LLBlaze.exe, please select the folder containing said file", "Warning");
+                _config.SaveConfig(_LLBFolderFinder.SelectedPath, showReadmeCheckbox.Checked);
                 gameFolderPath.Text = _LLBFolderFinder.SelectedPath + dataFolderEnding;
                 gameFolderPathString = _LLBFolderFinder.SelectedPath + dataFolderEnding;
                 if (_cleanerHelper.CheckModStatus(gameFolderPathString) == true)
                 {
+                    InstalledModsDGV.Rows.Clear();
                     GetInstalledModsAndAddThemToInstalledModsList();
                 }
             }
@@ -273,6 +304,21 @@ namespace LLB_Mod_Manager
             }
         }
 
+        private void AvailableModsDGV_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            foreach (DataGridViewRow row in AvailableModsDGV.Rows)
+            {
+                if (row.Cells[0].Selected || row.Cells[1].Selected || row.Cells[2].Selected || row.Cells[3].Selected)
+                {
+                    var selectedIndexName = row.Cells[0].Value;
+                    var selectedIndexReadmePath = availableModsPath + @"\" + selectedIndexName + @"\" + selectedIndexName + ".rtf";
+                    modInfoLabel.Text = selectedIndexName + " Readme";
+                    if (File.Exists(selectedIndexReadmePath)) readmeBox.LoadFile(selectedIndexReadmePath);
+                    else readmeBox.Text = "Mod has no readme file";
+                }
+            }
+        }
+
         private void InstalledModsDGV_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             foreach (DataGridViewRow row in InstalledModsDGV.Rows)
@@ -298,6 +344,21 @@ namespace LLB_Mod_Manager
             }
         }
 
+        private void InstalledModsDGV_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            foreach (DataGridViewRow row in InstalledModsDGV.Rows)
+            {
+                if (row.Cells[0].Selected || row.Cells[1].Selected || row.Cells[2].Selected || row.Cells[3].Selected)
+                {
+                    var selectedIndexName = row.Cells[0].Value;
+                    var selectedIndexReadmePath = availableModsPath + @"\" + selectedIndexName + @"\" + selectedIndexName + ".rtf";
+                    modInfoLabel.Text = selectedIndexName + " Readme";
+                    if (File.Exists(selectedIndexReadmePath)) readmeBox.LoadFile(selectedIndexReadmePath);
+                    else readmeBox.Text = "Mod has no readme file";
+                }
+            }
+        }
+
         private void SelectAllButton_Click(object sender, EventArgs e)
         {
             foreach (DataGridViewRow row in AvailableModsDGV.Rows) row.Cells[3].Value = "true";
@@ -313,14 +374,19 @@ namespace LLB_Mod_Manager
             if (_cleanerHelper.CheckModStatus(gameFolderPathString) == true)
             {
                 var installedModsList = _cleanerHelper.InstalledMods(gameFolderPathString);
-                _cleanerHelper.RemoveMods(gameFolderPathString, installedModsList);
-                InstalledModsDGV.Rows.Clear();
-                GetAvailableModsAndAddThemToAvailbleModsList();
-                _cleanerHelper.CleanGameFolder(gameFolderPathString);
-
-                _cleanerHelper.RemoveMod(gameFolderPathString, "ModMenu");
-                _backupHelper.RestoreBackup(gameFolderPathString);
-                _backupHelper.DeleteBackup(gameFolderPathString);
+                if (installedModsList.Count > 0)
+                {
+                    _cleanerHelper.RemoveMods(gameFolderPathString, installedModsList);
+                    InstalledModsDGV.Rows.Clear();
+                    GetAvailableModsAndAddThemToAvailbleModsList();
+                    _cleanerHelper.CleanGameFolder(gameFolderPathString);
+                }
+                try
+                {
+                    _cleanerHelper.RemoveMod(gameFolderPathString, "ModMenu");
+                    _backupHelper.RestoreBackup(gameFolderPathString);
+                    _backupHelper.DeleteBackup(gameFolderPathString);
+                } catch { Debug.WriteLine("Could not remove ModMenu. Please verify your files"); }
             } else _cleanerHelper.CleanGameFolder(gameFolderPathString);
         }
 
@@ -329,13 +395,7 @@ namespace LLB_Mod_Manager
             if (_cleanerHelper.CheckModStatus(gameFolderPathString) == true)
             {
                 List<string> modsToRemove = new List<string>();
-                foreach (DataGridViewRow row in InstalledModsDGV.Rows)
-                {
-                    if (row.Cells[3].Value.ToString() == "true")
-                    {
-                        modsToRemove.Add(row.Cells[0].Value.ToString());
-                    }
-                }
+                foreach (DataGridViewRow row in InstalledModsDGV.Rows) if (row.Cells[3].Value == "true") modsToRemove.Add(row.Cells[0].Value.ToString());
 
                 if (modsToRemove.Count > 0)
                 {
@@ -363,6 +423,25 @@ namespace LLB_Mod_Manager
             }
         }
 
+        private void refreshInstalledModsButton_Click(object sender, EventArgs e)
+        {
+            var installedModsList = _cleanerHelper.InstalledMods(gameFolderPathString);
+            if (installedModsList.Count > 0 && RefreshResetTimer.Enabled == false)
+            {
+                _injectionHelper.RefreshInstalledMods(gameFolderPathString, installedModsList);
+                refreshInstalledModsButton.Text = "Mods Refreshed";
+                refreshInstalledModsButton.Font = new Font(refreshInstalledModsButton.Font, FontStyle.Bold);
+                RefreshResetTimer.Enabled = true;
+            }
+        }
+
+        private void RefreshResetTimer_Tick(object sender, EventArgs e)
+        {
+            refreshInstalledModsButton.Text = "Refresh Installed Mods";
+            refreshInstalledModsButton.Font = new Font(refreshInstalledModsButton.Font, FontStyle.Regular);
+            RefreshResetTimer.Enabled = false;
+        }
+
         private void InstallModsButton_Click(object sender, EventArgs e)
         {
             var terminated = false;
@@ -384,7 +463,7 @@ namespace LLB_Mod_Manager
                         foreach (KeyValuePair<string, List<string>> keyVal in modsInformation) if (keyVal.Key == mod) alreadyAdded = true;
                         if (!alreadyAdded)
                         {
-                            List<string> modInfo = _availableMods.GetModInformation(gameFolderPathString + "\\Managed\\" + mod + ".dll", GitClient);
+                            List<string> modInfo = _availableMods.GetModInformation(gameFolderPathString + @"\LLBlaze_Data\Managed\" + mod + ".dll", GitClient);
                             modsInformation.Add(Path.GetFileNameWithoutExtension(mod), modInfo);
                             InstalledModsDGV.Rows.Add(modInfo[0], modInfo[1], modInfo[2]);
                         }
@@ -415,6 +494,11 @@ namespace LLB_Mod_Manager
             }
         }
 
+        private void stepByStepGuideButton_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://docs.google.com/document/d/18CHOzfFKfhW9Ch-zbERdJ5kGqhePSTJ3D3EEeA6R1-Q/edit?usp=sharing");
+        }
+
         private void versionLabel_Click(object sender, EventArgs e)
         {
             Process.Start("https://github.com/MrGentle/LLB-Mod-Manager/releases");
@@ -433,5 +517,22 @@ namespace LLB_Mod_Manager
 
         [DllImport("user32.dll", EntryPoint = "HideCaret")]
         public static extern long HideCaret(IntPtr hwnd);
+
+        private void showReadmeCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            ResizeWindow();
+
+            List<string> config = new List<string>();
+            config = _config.LoadConfig();
+
+            if (config.Count == 2) _config.SaveConfig(config[0], showReadmeCheckbox.Checked);
+            else _config.SaveConfig(@"c:\", showReadmeCheckbox.Checked);
+        }
+
+        private void ResizeWindow()
+        {
+            if (!showReadmeCheckbox.Checked) this.Size = new Size(546, 578);
+            else this.Size = new Size(1078, 578);
+        }
     }
 }
