@@ -216,10 +216,10 @@ namespace LLB_Mod_Manager
         private void InitConfig()
         {
             List<string> configPath = _config.LoadConfig();
-            if (configPath[0].Contains(@"\LLBlaze_Data")) MessageBox.Show("LLBMM has detected that you have LLBlaze_Data as your selected game folder. This version requires you to set your selected folder to LLBlaze instead. (The folder containing the exe)", "Warning");
 
             if (configPath.Count > 0)
             {
+                if (configPath[0].Contains(@"\LLBlaze_Data")) MessageBox.Show("LLBMM has detected that you have LLBlaze_Data as your selected game folder. This version requires you to set your selected folder to LLBlaze instead. (The folder containing the exe)", "Warning");
                 gameFolderPath.Text = configPath[0];
                 gameFolderPathString = configPath[0];
                 if (configPath[1] == "True") showReadmeCheckbox.Checked = true;
@@ -531,8 +531,13 @@ namespace LLB_Mod_Manager
 
         private void ResizeWindow()
         {
-            if (!showReadmeCheckbox.Checked) this.Size = new Size(546, 578);
-            else this.Size = new Size(1078, 578);
+            if (!showReadmeCheckbox.Checked) this.Size = new Size(540, 590);
+            else this.Size = new Size(1070, 590);
+        }
+
+        private void buyMeACoffeeButton_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://www.buymeacoffee.com/MrGentle");
         }
     }
 }

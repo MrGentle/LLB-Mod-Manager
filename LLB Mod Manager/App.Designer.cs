@@ -51,6 +51,7 @@
             this.stepByStepGuideButton = new System.Windows.Forms.Button();
             this.showReadmeLabel = new System.Windows.Forms.Label();
             this.showReadmeCheckbox = new System.Windows.Forms.CheckBox();
+            this.buyMeACoffeeButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.AvailableModsDGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.InstalledModsDGV)).BeginInit();
             this.SuspendLayout();
@@ -59,7 +60,7 @@
             // 
             this.LabelGameLocation.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LabelGameLocation.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.LabelGameLocation.Location = new System.Drawing.Point(15, 35);
+            this.LabelGameLocation.Location = new System.Drawing.Point(12, 44);
             this.LabelGameLocation.Name = "LabelGameLocation";
             this.LabelGameLocation.Size = new System.Drawing.Size(500, 17);
             this.LabelGameLocation.TabIndex = 0;
@@ -72,7 +73,7 @@
             this.gameFolderPath.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gameFolderPath.ForeColor = System.Drawing.SystemColors.Control;
             this.gameFolderPath.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.gameFolderPath.Location = new System.Drawing.Point(15, 55);
+            this.gameFolderPath.Location = new System.Drawing.Point(12, 64);
             this.gameFolderPath.Name = "gameFolderPath";
             this.gameFolderPath.ReadOnly = true;
             this.gameFolderPath.ShortcutsEnabled = false;
@@ -88,7 +89,7 @@
             this.BrowseButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.BrowseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.BrowseButton.ForeColor = System.Drawing.SystemColors.Control;
-            this.BrowseButton.Location = new System.Drawing.Point(431, 55);
+            this.BrowseButton.Location = new System.Drawing.Point(428, 64);
             this.BrowseButton.Name = "BrowseButton";
             this.BrowseButton.Size = new System.Drawing.Size(84, 23);
             this.BrowseButton.TabIndex = 2;
@@ -100,7 +101,7 @@
             // 
             this.availableModsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.availableModsLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.availableModsLabel.Location = new System.Drawing.Point(15, 103);
+            this.availableModsLabel.Location = new System.Drawing.Point(12, 112);
             this.availableModsLabel.Name = "availableModsLabel";
             this.availableModsLabel.Size = new System.Drawing.Size(500, 17);
             this.availableModsLabel.TabIndex = 8;
@@ -110,7 +111,7 @@
             // 
             this.installedModsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.installedModsLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.installedModsLabel.Location = new System.Drawing.Point(15, 329);
+            this.installedModsLabel.Location = new System.Drawing.Point(12, 338);
             this.installedModsLabel.Name = "installedModsLabel";
             this.installedModsLabel.Size = new System.Drawing.Size(250, 17);
             this.installedModsLabel.TabIndex = 11;
@@ -120,7 +121,7 @@
             // 
             this.installModsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.installModsButton.ForeColor = System.Drawing.SystemColors.Control;
-            this.installModsButton.Location = new System.Drawing.Point(215, 280);
+            this.installModsButton.Location = new System.Drawing.Point(212, 289);
             this.installModsButton.Name = "installModsButton";
             this.installModsButton.Size = new System.Drawing.Size(300, 23);
             this.installModsButton.TabIndex = 13;
@@ -132,9 +133,9 @@
             // 
             this.readmeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.readmeButton.ForeColor = System.Drawing.SystemColors.Control;
-            this.readmeButton.Location = new System.Drawing.Point(547, 505);
+            this.readmeButton.Location = new System.Drawing.Point(544, 515);
             this.readmeButton.Name = "readmeButton";
-            this.readmeButton.Size = new System.Drawing.Size(317, 23);
+            this.readmeButton.Size = new System.Drawing.Size(177, 23);
             this.readmeButton.TabIndex = 1;
             this.readmeButton.Text = "Show LLBMM Readme";
             this.readmeButton.UseVisualStyleBackColor = true;
@@ -144,11 +145,11 @@
             // 
             this.readmeBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.readmeBox.ForeColor = System.Drawing.SystemColors.Control;
-            this.readmeBox.Location = new System.Drawing.Point(547, 35);
+            this.readmeBox.Location = new System.Drawing.Point(544, 44);
             this.readmeBox.Name = "readmeBox";
             this.readmeBox.ReadOnly = true;
             this.readmeBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.readmeBox.Size = new System.Drawing.Size(500, 464);
+            this.readmeBox.Size = new System.Drawing.Size(500, 465);
             this.readmeBox.TabIndex = 0;
             this.readmeBox.Text = "";
             this.readmeBox.Enter += new System.EventHandler(this.readmeBox_Enter);
@@ -157,7 +158,7 @@
             // 
             this.modInfoLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.modInfoLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.modInfoLabel.Location = new System.Drawing.Point(547, 9);
+            this.modInfoLabel.Location = new System.Drawing.Point(544, 18);
             this.modInfoLabel.Name = "modInfoLabel";
             this.modInfoLabel.Size = new System.Drawing.Size(500, 17);
             this.modInfoLabel.TabIndex = 16;
@@ -168,7 +169,7 @@
             // 
             this.uninstallSelectedModButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.uninstallSelectedModButton.ForeColor = System.Drawing.SystemColors.Control;
-            this.uninstallSelectedModButton.Location = new System.Drawing.Point(321, 505);
+            this.uninstallSelectedModButton.Location = new System.Drawing.Point(318, 514);
             this.uninstallSelectedModButton.Name = "uninstallSelectedModButton";
             this.uninstallSelectedModButton.Size = new System.Drawing.Size(194, 23);
             this.uninstallSelectedModButton.TabIndex = 17;
@@ -180,7 +181,7 @@
             // 
             this.versionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.versionLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.versionLabel.Location = new System.Drawing.Point(15, 9);
+            this.versionLabel.Location = new System.Drawing.Point(12, 18);
             this.versionLabel.Name = "versionLabel";
             this.versionLabel.Size = new System.Drawing.Size(500, 17);
             this.versionLabel.TabIndex = 18;
@@ -196,7 +197,7 @@
             this.AvailableModsDGV.AllowUserToResizeRows = false;
             this.AvailableModsDGV.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             this.AvailableModsDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.AvailableModsDGV.Location = new System.Drawing.Point(15, 123);
+            this.AvailableModsDGV.Location = new System.Drawing.Point(12, 132);
             this.AvailableModsDGV.Name = "AvailableModsDGV";
             this.AvailableModsDGV.ReadOnly = true;
             this.AvailableModsDGV.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
@@ -215,7 +216,7 @@
             this.InstalledModsDGV.AllowUserToResizeRows = false;
             this.InstalledModsDGV.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             this.InstalledModsDGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.InstalledModsDGV.Location = new System.Drawing.Point(15, 349);
+            this.InstalledModsDGV.Location = new System.Drawing.Point(12, 358);
             this.InstalledModsDGV.Name = "InstalledModsDGV";
             this.InstalledModsDGV.ReadOnly = true;
             this.InstalledModsDGV.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
@@ -230,7 +231,7 @@
             // 
             this.SelectAllButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SelectAllButton.ForeColor = System.Drawing.SystemColors.Control;
-            this.SelectAllButton.Location = new System.Drawing.Point(15, 280);
+            this.SelectAllButton.Location = new System.Drawing.Point(12, 289);
             this.SelectAllButton.Name = "SelectAllButton";
             this.SelectAllButton.Size = new System.Drawing.Size(94, 23);
             this.SelectAllButton.TabIndex = 21;
@@ -242,7 +243,7 @@
             // 
             this.DeselectAllButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.DeselectAllButton.ForeColor = System.Drawing.SystemColors.Control;
-            this.DeselectAllButton.Location = new System.Drawing.Point(115, 280);
+            this.DeselectAllButton.Location = new System.Drawing.Point(112, 289);
             this.DeselectAllButton.Name = "DeselectAllButton";
             this.DeselectAllButton.Size = new System.Drawing.Size(94, 23);
             this.DeselectAllButton.TabIndex = 22;
@@ -254,7 +255,7 @@
             // 
             this.uninstallModsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.uninstallModsButton.ForeColor = System.Drawing.SystemColors.Control;
-            this.uninstallModsButton.Location = new System.Drawing.Point(215, 505);
+            this.uninstallModsButton.Location = new System.Drawing.Point(212, 514);
             this.uninstallModsButton.Name = "uninstallModsButton";
             this.uninstallModsButton.Size = new System.Drawing.Size(100, 23);
             this.uninstallModsButton.TabIndex = 14;
@@ -266,7 +267,7 @@
             // 
             this.refreshInstalledModsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.refreshInstalledModsButton.ForeColor = System.Drawing.SystemColors.Control;
-            this.refreshInstalledModsButton.Location = new System.Drawing.Point(15, 505);
+            this.refreshInstalledModsButton.Location = new System.Drawing.Point(12, 514);
             this.refreshInstalledModsButton.Name = "refreshInstalledModsButton";
             this.refreshInstalledModsButton.Size = new System.Drawing.Size(194, 23);
             this.refreshInstalledModsButton.TabIndex = 23;
@@ -283,7 +284,7 @@
             // 
             this.stepByStepGuideButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.stepByStepGuideButton.ForeColor = System.Drawing.SystemColors.Control;
-            this.stepByStepGuideButton.Location = new System.Drawing.Point(870, 505);
+            this.stepByStepGuideButton.Location = new System.Drawing.Point(727, 515);
             this.stepByStepGuideButton.Name = "stepByStepGuideButton";
             this.stepByStepGuideButton.Size = new System.Drawing.Size(177, 23);
             this.stepByStepGuideButton.TabIndex = 24;
@@ -295,7 +296,7 @@
             // 
             this.showReadmeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.showReadmeLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.showReadmeLabel.Location = new System.Drawing.Point(265, 329);
+            this.showReadmeLabel.Location = new System.Drawing.Point(262, 338);
             this.showReadmeLabel.Name = "showReadmeLabel";
             this.showReadmeLabel.Size = new System.Drawing.Size(250, 17);
             this.showReadmeLabel.TabIndex = 25;
@@ -311,19 +312,36 @@
             this.showReadmeCheckbox.FlatAppearance.CheckedBackColor = System.Drawing.Color.White;
             this.showReadmeCheckbox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.showReadmeCheckbox.ForeColor = System.Drawing.Color.Black;
-            this.showReadmeCheckbox.Location = new System.Drawing.Point(502, 333);
+            this.showReadmeCheckbox.Location = new System.Drawing.Point(499, 342);
             this.showReadmeCheckbox.Name = "showReadmeCheckbox";
             this.showReadmeCheckbox.Size = new System.Drawing.Size(12, 12);
             this.showReadmeCheckbox.TabIndex = 26;
             this.showReadmeCheckbox.UseVisualStyleBackColor = false;
             this.showReadmeCheckbox.CheckedChanged += new System.EventHandler(this.showReadmeCheckbox_CheckedChanged);
             // 
+            // buyMeACoffeeButton
+            // 
+            this.buyMeACoffeeButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("buyMeACoffeeButton.BackgroundImage")));
+            this.buyMeACoffeeButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.buyMeACoffeeButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.buyMeACoffeeButton.FlatAppearance.BorderSize = 0;
+            this.buyMeACoffeeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buyMeACoffeeButton.ForeColor = System.Drawing.SystemColors.Control;
+            this.buyMeACoffeeButton.Location = new System.Drawing.Point(910, 515);
+            this.buyMeACoffeeButton.Name = "buyMeACoffeeButton";
+            this.buyMeACoffeeButton.Size = new System.Drawing.Size(134, 23);
+            this.buyMeACoffeeButton.TabIndex = 27;
+            this.buyMeACoffeeButton.Text = "     Buy Me A Coffee";
+            this.buyMeACoffeeButton.UseVisualStyleBackColor = false;
+            this.buyMeACoffeeButton.Click += new System.EventHandler(this.buyMeACoffeeButton_Click);
+            // 
             // App
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.ClientSize = new System.Drawing.Size(1062, 540);
+            this.ClientSize = new System.Drawing.Size(1062, 551);
+            this.Controls.Add(this.buyMeACoffeeButton);
             this.Controls.Add(this.showReadmeCheckbox);
             this.Controls.Add(this.showReadmeLabel);
             this.Controls.Add(this.stepByStepGuideButton);
@@ -382,6 +400,7 @@
         private System.Windows.Forms.Button stepByStepGuideButton;
         private System.Windows.Forms.Label showReadmeLabel;
         private System.Windows.Forms.CheckBox showReadmeCheckbox;
+        private System.Windows.Forms.Button buyMeACoffeeButton;
     }
 }
 
