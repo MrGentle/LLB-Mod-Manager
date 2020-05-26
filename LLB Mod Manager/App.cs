@@ -298,22 +298,32 @@ namespace LLB_Mod_Manager
             }
         }
 
+        private void ToggleCheckBox(DataGridViewCheckBoxCell checkBoxCell)
+        {
+            if (checkBoxCell.Selected)
+            {
+                if (checkBoxCell.Value == null || !checkBoxCell.Value.Equals(true))
+                {
+                    checkBoxCell.Value = true;
+                }
+                else
+                {
+                    checkBoxCell.Value = false;
+                }
+            }
+        }
         private void AvailableModsDGV_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             foreach (DataGridViewRow row in AvailableModsDGV.Rows)
             {
-                if (row.Cells[3].Selected)
-                {
-                    if (row.Cells[3].Value != "true") row.Cells[3].Value = "true";
-                    else row.Cells[3].Value = "false";
-                }
+                ToggleCheckBox(row.Cells[3] as DataGridViewCheckBoxCell);
 
                 if (row.Cells[0].Selected || row.Cells[1].Selected || row.Cells[2].Selected || row.Cells[3].Selected)
                 {
                     ReadmeBox_LoadMod(row.Cells[0].Value.ToString());
                 }
 
-                if (row.Cells[2].Selected) foreach (KeyValuePair<string, List<string>> keyVal in modsInformation) if (keyVal.Key == row.Cells[0].Value.ToString() && keyVal.Value[3] != "??") Process.Start(keyVal.Value[3]);
+                if (row.Cells[2].Selected) foreach (KeyValuePair<string, List<string>> keyVal in modsInformation) if (row.Cells[0].Value.Equals(keyVal.Key) && keyVal.Value[3] != "??") Process.Start(keyVal.Value[3]);
             }
         }
 
@@ -332,20 +342,14 @@ namespace LLB_Mod_Manager
         {
             foreach (DataGridViewRow row in InstalledModsDGV.Rows)
             {
-                var cell = row.Cells[3];
-                if (cell.Selected)
-                {
-                    if (cell.Value != "true") cell.Value = "true";
-                    else cell.Value = "false";
-                    cell.Selected = false;
-                }
+                ToggleCheckBox(row.Cells[3] as DataGridViewCheckBoxCell);
 
                 if (row.Cells[0].Selected || row.Cells[1].Selected || row.Cells[2].Selected || row.Cells[3].Selected)
                 {
                     ReadmeBox_LoadMod(row.Cells[0].Value.ToString());
                 }
 
-                if (row.Cells[2].Selected) foreach (KeyValuePair<string, List<string>> keyVal in modsInformation) if (keyVal.Key == row.Cells[0].Value.ToString() && keyVal.Value[3] != "??") Process.Start(keyVal.Value[3]);
+                if (row.Cells[2].Selected) foreach (KeyValuePair<string, List<string>> keyVal in modsInformation) if (row.Cells[0].Value.Equals(keyVal.Key) && keyVal.Value[3] != "??") Process.Start(keyVal.Value[3]);
             }
         }
 
@@ -370,12 +374,12 @@ namespace LLB_Mod_Manager
 
         private void SelectAllButton_Click(object sender, EventArgs e)
         {
-            foreach (DataGridViewRow row in AvailableModsDGV.Rows) row.Cells[3].Value = "true";
+            foreach (DataGridViewRow row in AvailableModsDGV.Rows) row.Cells[3].Value = true;
         }
 
         private void DeselectAllButton_Click(object sender, EventArgs e)
         {
-            foreach (DataGridViewRow row in AvailableModsDGV.Rows) row.Cells[3].Value = "false";
+            foreach (DataGridViewRow row in AvailableModsDGV.Rows) row.Cells[3].Value = false;
         }
 
         private void UninstallModsButton_Click(object sender, EventArgs e)
@@ -404,7 +408,7 @@ namespace LLB_Mod_Manager
             if (_cleanerHelper.CheckModStatus(gameFolderPathString) == true)
             {
                 List<string> modsToRemove = new List<string>();
-                foreach (DataGridViewRow row in InstalledModsDGV.Rows) if (row.Cells[3].Value == "true") modsToRemove.Add(row.Cells[0].Value.ToString());
+                foreach (DataGridViewRow row in InstalledModsDGV.Rows) if (row.Cells[3].Value != null && row.Cells[3].Value.Equals(true)) modsToRemove.Add(row.Cells[0].Value.ToString());
 
                 if (modsToRemove.Count > 0)
                 {
@@ -455,7 +459,7 @@ namespace LLB_Mod_Manager
         {
             var terminated = false;
             List<string> modsToInstall = new List<string>();
-            foreach(DataGridViewRow row in AvailableModsDGV.Rows) if (row.Cells[3].Value == "true") modsToInstall.Add(row.Cells[0].Value.ToString());
+            foreach(DataGridViewRow row in AvailableModsDGV.Rows) if (row.Cells[3].Value != null && row.Cells[3].Value.Equals(true)) modsToInstall.Add(row.Cells[0].Value.ToString());
 
             if (modsToInstall.Count > 0)
             {

@@ -12,7 +12,7 @@ namespace LLB_Mod_Manager
 
         private PathHelper()
         {
-            this.setPlatform();
+            this.SetPlatform();
         }
 
         public static PathHelper Get()
@@ -29,16 +29,24 @@ namespace LLB_Mod_Manager
                 if (System.Environment.Is64BitOperatingSystem) filename = "LLBLAZE.x86_64";
                 else filename = "LLBLAZE.x86";
             }
-            else if (_isOSX) filename = "";
+            else if (_isOSX) filename = "LLBlaze";
 
             return filename;
+        }
+        public string GetLLBExecutablePath(string gameDirPath)
+        {
+            string execPath = null;
+            if (_isWindows || _isLinux) execPath = Path.Combine(gameDirPath, GetLLBExecutableName());
+            else if (_isOSX) execPath = Path.Combine(gameDirPath, "Contents", "MacOS", GetLLBExecutableName());
+
+            return execPath;
         }
         public string GetLLBGameDirName()
         {
             string filename = null;
             if (_isWindows) filename = "LLBlaze";
             else if (_isLinux) filename = "LLBlaze";
-            else if (_isOSX) filename = "";
+            else if (_isOSX) filename = "LLBlaze.app";
 
             return filename;
         }
@@ -47,12 +55,32 @@ namespace LLB_Mod_Manager
             string filename = null;
             if (_isWindows) filename = "LLBlaze_Data";
             else if (_isLinux) filename = "LLBLAZE_Data";
-            else if (_isOSX) filename = "";
+            else if (_isOSX) filename = "Data";
 
             return filename;
         }
+        public string GetLLBGameDataDirPath(string gameDirPath)
+        {
+            string dataDirPath = null;
+            if (_isWindows || _isLinux) dataDirPath = Path.Combine(gameDirPath, GetLLBGameDataDirName());
+            else if (_isOSX) dataDirPath = Path.Combine(gameDirPath, "Contents", "Resources", GetLLBGameDataDirName());
 
-        private void setPlatform()
+            return dataDirPath;
+        }
+        public string GetLLBGameManagedDirPath(string gameDirPath)
+        {
+            return Path.Combine(GetLLBGameDataDirPath(gameDirPath), "Managed");
+        }
+        public string GetLLBGameBundleDirPath(string gameDirPath)
+        {
+            string bundleDirPath = null;
+            if (_isWindows || _isLinux) bundleDirPath = Path.Combine(gameDirPath, "Bundles");
+            else if (_isOSX) bundleDirPath = Path.Combine(GetLLBGameDataDirPath(gameDirPath), "StreamingAssets", "Bundles");
+
+            return bundleDirPath;
+        }
+
+        private void SetPlatform()
         {
             // see https://stackoverflow.com/questions/38790802/determine-operating-system-in-net-core/38795621#38795621
             string windir = Environment.GetEnvironmentVariable("windir");
@@ -82,6 +110,14 @@ namespace LLB_Mod_Manager
             {
                 throw new PlatformNotSupportedException();
             }
+        }
+
+        public string getPlatform()
+        {
+            if (_isWindows) return "Windows";
+            else if (_isLinux) return "Linux";
+            else if (_isOSX) return "MacOS";
+            else return "Unknown";
         }
     }
 }

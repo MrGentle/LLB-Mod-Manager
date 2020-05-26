@@ -20,8 +20,8 @@ namespace LLB_Mod_Manager
 
             //Game Folder Paths
             string game_managedDir = Path.Combine(_gameDataFolder, PathHelper.Get().GetLLBGameDataDirName(), "Managed");
-            string game_tempDir = Path.Combine(game_managedDir + "temp");
-            string game_mainAsmFile = Path.Combine(game_managedDir + "Assembly-CSharp.dll");
+            string game_tempDir = Path.Combine(game_managedDir, "temp");
+            string game_mainAsmFile = Path.Combine(game_managedDir, "Assembly-CSharp.dll");
 
             List<string> modsToInstallPaths = new List<string>(); //Will hold the file paths for the mods we recieved from the pendingMods ListBox.
 

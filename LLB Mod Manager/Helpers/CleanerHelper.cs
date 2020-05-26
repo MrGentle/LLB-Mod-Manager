@@ -15,7 +15,8 @@ namespace LLB_Mod_Manager
 
         public bool CheckModStatus(string _gameDataFolder)
         {
-            string assemblyPath = Path.Combine(_gameDataFolder, "LLBlaze_Data", "Managed", "Assembly-CSharp.dll");
+            string gameDataDirName = PathHelper.Get().GetLLBGameDataDirName();
+            string assemblyPath = Path.Combine(_gameDataFolder, gameDataDirName, "Managed", "Assembly-CSharp.dll");
             try { asmDef = AssemblyDefinition.ReadAssembly(assemblyPath); }
             catch
             {
@@ -39,7 +40,8 @@ namespace LLB_Mod_Manager
 
         public List<string> InstalledMods(string _gameDataFolder)
         {
-            string assemblyPath = Path.Combine(_gameDataFolder, "LLBlaze_Data", "Managed", "Assembly-CSharp.dll");
+            string gameDataDirName = PathHelper.Get().GetLLBGameDataDirName();
+            string assemblyPath = Path.Combine(_gameDataFolder, gameDataDirName, "Managed", "Assembly-CSharp.dll");
             List<string> installedModsList = new List<string>();
             try { asmDef = AssemblyDefinition.ReadAssembly(assemblyPath); }
             catch
@@ -74,7 +76,8 @@ namespace LLB_Mod_Manager
 
         public bool RemoveMod(string _gameDataFolder, string mod)
         {
-            string managedPath = Path.Combine(_gameDataFolder, "LLBlaze_Data", "Managed");
+            string gameDataDirName = PathHelper.Get().GetLLBGameDataDirName();
+            string managedPath = Path.Combine(_gameDataFolder, gameDataDirName, "Managed");
             string assemblyPath = Path.Combine(managedPath, "Assembly-CSharp.dll");
 
             //Injection information
@@ -167,9 +170,10 @@ namespace LLB_Mod_Manager
 
         public bool CleanGameFolder(string _gameDataFolder)
         {
+            string gameDataDirName = PathHelper.Get().GetLLBGameDataDirName();
             try
             {
-                string managedPath = Path.Combine(_gameDataFolder, "LLBlaze_Data", "Managed");
+                string managedPath = Path.Combine(_gameDataFolder, gameDataDirName, "Managed");
                 string managedTempPath = Path.Combine(managedPath, "temp");
                 var bh = new BackupHelper();
                 bh.DeleteBackup(_gameDataFolder);
@@ -194,7 +198,7 @@ namespace LLB_Mod_Manager
                 return true;
             } catch
             {
-                MessageBox.Show("Could not clean all mod files from folder. Please go into the LLBlaze_Data"+ Path.DirectorySeparatorChar +"Managed folder and check if there is a ModManagerBackup folder. If there is, delete the Assembly-CSharp file in Managed and copy the backup file over it and remove 'backup' from its name. Also, delete the temp folder and any mod folders if they exist. Ensure that there is no ModMenu.dll present either.", "");
+                MessageBox.Show("Could not clean all mod files from folder. Please go into the "+ gameDataDirName + Path.DirectorySeparatorChar +"Managed folder and check if there is a ModManagerBackup folder. If there is, delete the Assembly-CSharp file in Managed and copy the backup file over it and remove 'backup' from its name. Also, delete the temp folder and any mod folders if they exist. Ensure that there is no ModMenu.dll present either.", "");
                 return false;
             }
         }
