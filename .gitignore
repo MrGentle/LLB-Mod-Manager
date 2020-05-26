@@ -259,3 +259,6 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+# A symbolic link i use in my VM
+LLB Mod Manager/bin
