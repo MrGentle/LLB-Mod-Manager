@@ -54,6 +54,7 @@ namespace LLB_Mod_Manager
 
         private void setPlatform()
         {
+            // see https://stackoverflow.com/questions/38790802/determine-operating-system-in-net-core/38795621#38795621
             string windir = Environment.GetEnvironmentVariable("windir");
             if (!string.IsNullOrEmpty(windir) && windir.Contains(@"\") && Directory.Exists(windir))
             {
