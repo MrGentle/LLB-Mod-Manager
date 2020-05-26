@@ -7,17 +7,18 @@ namespace LLB_Mod_Manager
     {
         public void DoBackup(string gameDataFolder)
         {
-            string assemblypath = gameDataFolder + @"\LLBlaze_Data\Managed\Assembly-CSharp.dll"; //Change paths after release
-            string backupPath = gameDataFolder + @"\LLBlaze_Data\Managed\ModManagerBackup";
+            string assemblyPath = Path.Combine(gameDataFolder, "LLBlaze_Data", "Managed", "Assembly-CSharp.dll");
+            string backupPath = Path.Combine(gameDataFolder, "LLBlaze_Data", "Managed", "ModManagerBackup");
+            string backupAssemblyPath = Path.Combine(backupPath, "Assembly-CSharp-Backup.dll");
 
-            if (File.Exists(assemblypath))
+            if (File.Exists(assemblyPath))
             {
-                if (File.Exists(backupPath + @"\Assembly-CSharp-Backup.dll")) File.Delete(backupPath + @"\Assembly-CSharp-Backup.dll");
+                if (File.Exists(backupAssemblyPath)) File.Delete(backupAssemblyPath);
 
                 try
                 {
                     Directory.CreateDirectory(backupPath);
-                    File.Copy(assemblypath, backupPath + @"\Assembly-CSharp-Backup.dll");
+                    File.Copy(assemblyPath, backupAssemblyPath);
                 }
                 catch
                 {
@@ -28,19 +29,22 @@ namespace LLB_Mod_Manager
 
         public void RestoreBackup(string gameDataFolder)
         {
-            string backupPath = gameDataFolder + @"\LLBlaze_Data\Managed\ModManagerBackup";
-            if (File.Exists(backupPath + @"\Assembly-CSharp-Backup.dll"))
+            string assemblyPath = Path.Combine(gameDataFolder, "LLBlaze_Data", "Managed", "Assembly-CSharp.dll");
+            string backupPath = Path.Combine(gameDataFolder, "LLBlaze_Data", "Managed", "ModManagerBackup");
+            string backupAssemblyPath = Path.Combine(backupPath, "Assembly-CSharp-Backup.dll");
+            if (File.Exists(backupAssemblyPath))
             {
-                File.Delete(gameDataFolder + @"\LLBlaze_Data\Managed\Assembly-CSharp.dll");
-                File.Copy(backupPath + @"\Assembly-CSharp-Backup.dll", gameDataFolder + @"\LLBlaze_Data\Managed\Assembly-CSharp.dll");
+                File.Delete(assemblyPath);
+                File.Copy(backupAssemblyPath, assemblyPath);
             }
         }
 
         public void DeleteBackup(string gameDataFolder)
         {
-            string backupPath = gameDataFolder + @"\LLBlaze_Data\Managed\ModManagerBackup";
+            string backupPath = Path.Combine(gameDataFolder, "LLBlaze_Data", "Managed", "ModManagerBackup");
+            string backupAssemblyPath = Path.Combine(backupPath, "Assembly-CSharp-Backup.dll");
 
-            if (File.Exists(backupPath + @"\Assembly-CSharp-Backup.dll")) File.Delete(backupPath + @"\Assembly-CSharp-Backup.dll");
+            if (File.Exists(backupAssemblyPath)) File.Delete(backupAssemblyPath);
             if (Directory.Exists(backupPath)) Directory.Delete(backupPath);
         }
 

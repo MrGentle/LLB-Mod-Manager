@@ -11,6 +11,10 @@ using System.Runtime.InteropServices;
 
 namespace LLB_Mod_Manager
 {
+    enum Paths
+    {
+
+    }
     public partial class App : Form
     {
         public string gameFolderPathString = "";
@@ -115,7 +119,7 @@ namespace LLB_Mod_Manager
                     foreach (KeyValuePair<string, List<string>> keyVal in modsInformation) if (keyVal.Key == mod) alreadyAdded = true;
                     if (!alreadyAdded)
                     {
-                        List<string> modInfo = _availableMods.GetModInformation(gameFolderPathString + @"\LLBlaze_Data\Managed\" + mod + ".dll", GitClient);
+                        List<string> modInfo = _availableMods.GetModInformation(Path.Combine(gameFolderPathString, "LLBlaze_Data", "Managed", mod + ".dll"), GitClient);
                         modsInformation.Add(Path.GetFileNameWithoutExtension(mod), modInfo);
                         InstalledModsDGV.Rows.Add(modInfo[0], modInfo[1], modInfo[2]);
                     }
@@ -219,7 +223,8 @@ namespace LLB_Mod_Manager
 
             if (configPath.Count > 0)
             {
-                if (configPath[0].Contains(@"\LLBlaze_Data")) MessageBox.Show("LLBMM has detected that you have LLBlaze_Data as your selected game folder. This version requires you to set your selected folder to LLBlaze instead. (The folder containing the exe)", "Warning");
+                if (configPath[0].Contains(Path.DirectorySeparatorChar + "LLBlaze_Data")) MessageBox.Show("LLBMM has detected that you have LLBlaze_Data as your selected game folder. This version requires you to set your selected folder to LLBlaze instead. (The folder containing the exe)", "Warning");
+
                 gameFolderPath.Text = configPath[0];
                 gameFolderPathString = configPath[0];
                 if (configPath[1] == "True") showReadmeCheckbox.Checked = true;
@@ -228,17 +233,21 @@ namespace LLB_Mod_Manager
             }
 
             string LLBMMPath = Directory.GetCurrentDirectory();
-            availableModsPath = LLBMMPath + @"\mods";
+            availableModsPath = Path.Combine(LLBMMPath, "mods");
             Directory.CreateDirectory(availableModsPath);
 
-            if (File.Exists(Directory.GetCurrentDirectory() + @"\Readme.rtf"))
+            if (File.Exists(Path.Combine(LLBMMPath, "Readme.rtf")))
             {
                 modInfoLabel.Text = "Mod Manager information";
-                readmeBox.LoadFile(Directory.GetCurrentDirectory() + @"\Readme.rtf");
+                readmeBox.LoadFile(Path.Combine(LLBMMPath, "Readme.rtf"));
             }
 
             var token = _config.LoadGitToken();
-            if (token != "") { GitClient.Credentials = new Credentials(token); Debug.WriteLine("Loaded token " + token); }
+            if (token != "")
+            { 
+                GitClient.Credentials = new Credentials(token);
+                Debug.WriteLine("Loaded token " + token);
+            }
         }
 
         private void InitToolTip()
@@ -269,7 +278,10 @@ namespace LLB_Mod_Manager
 
             if (_LLBFolderFinder.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                if (!File.Exists(_LLBFolderFinder.SelectedPath + @"\LLBlaze.exe")) MessageBox.Show("The selected directory does not contain LLBlaze.exe, please select the folder containing said file", "Warning");
+                if (!File.Exists(Path.Combine(_LLBFolderFinder.SelectedPath ,"LLBlaze.exe")))
+                {
+                    MessageBox.Show("The selected directory does not contain LLBlaze.exe, please select the folder containing said file", "Warning");
+                }
                 _config.SaveConfig(_LLBFolderFinder.SelectedPath, showReadmeCheckbox.Checked);
                 gameFolderPath.Text = _LLBFolderFinder.SelectedPath + dataFolderEnding;
                 gameFolderPathString = _LLBFolderFinder.SelectedPath + dataFolderEnding;
@@ -293,11 +305,7 @@ namespace LLB_Mod_Manager
 
                 if (row.Cells[0].Selected || row.Cells[1].Selected || row.Cells[2].Selected || row.Cells[3].Selected)
                 {
-                    var selectedIndexName = row.Cells[0].Value;
-                    var selectedIndexReadmePath = availableModsPath + @"\" + selectedIndexName + @"\" + selectedIndexName + ".rtf";
-                    modInfoLabel.Text = selectedIndexName + " Readme";
-                    if (File.Exists(selectedIndexReadmePath)) readmeBox.LoadFile(selectedIndexReadmePath);
-                    else readmeBox.Text = "Mod has no readme file";
+                    ReadmeBox_LoadMod(row.Cells[0].Value.ToString());
                 }
 
                 if (row.Cells[2].Selected) foreach (KeyValuePair<string, List<string>> keyVal in modsInformation) if (keyVal.Key == row.Cells[0].Value.ToString() && keyVal.Value[3] != "??") Process.Start(keyVal.Value[3]);
@@ -310,11 +318,7 @@ namespace LLB_Mod_Manager
             {
                 if (row.Cells[0].Selected || row.Cells[1].Selected || row.Cells[2].Selected || row.Cells[3].Selected)
                 {
-                    var selectedIndexName = row.Cells[0].Value;
-                    var selectedIndexReadmePath = availableModsPath + @"\" + selectedIndexName + @"\" + selectedIndexName + ".rtf";
-                    modInfoLabel.Text = selectedIndexName + " Readme";
-                    if (File.Exists(selectedIndexReadmePath)) readmeBox.LoadFile(selectedIndexReadmePath);
-                    else readmeBox.Text = "Mod has no readme file";
+                    ReadmeBox_LoadMod(row.Cells[0].Value.ToString());
                 }
             }
         }
@@ -333,11 +337,7 @@ namespace LLB_Mod_Manager
 
                 if (row.Cells[0].Selected || row.Cells[1].Selected || row.Cells[2].Selected || row.Cells[3].Selected)
                 {
-                    var selectedIndexName = row.Cells[0].Value;
-                    var selectedIndexReadmePath = availableModsPath + @"\" + selectedIndexName + @"\" + selectedIndexName + ".rtf";
-                    modInfoLabel.Text = selectedIndexName + " Readme";
-                    if (File.Exists(selectedIndexReadmePath)) readmeBox.LoadFile(selectedIndexReadmePath);
-                    else readmeBox.Text = "Mod has no readme file";
+                    ReadmeBox_LoadMod(row.Cells[0].Value.ToString());
                 }
 
                 if (row.Cells[2].Selected) foreach (KeyValuePair<string, List<string>> keyVal in modsInformation) if (keyVal.Key == row.Cells[0].Value.ToString() && keyVal.Value[3] != "??") Process.Start(keyVal.Value[3]);
@@ -350,13 +350,17 @@ namespace LLB_Mod_Manager
             {
                 if (row.Cells[0].Selected || row.Cells[1].Selected || row.Cells[2].Selected || row.Cells[3].Selected)
                 {
-                    var selectedIndexName = row.Cells[0].Value;
-                    var selectedIndexReadmePath = availableModsPath + @"\" + selectedIndexName + @"\" + selectedIndexName + ".rtf";
-                    modInfoLabel.Text = selectedIndexName + " Readme";
-                    if (File.Exists(selectedIndexReadmePath)) readmeBox.LoadFile(selectedIndexReadmePath);
-                    else readmeBox.Text = "Mod has no readme file";
+                    ReadmeBox_LoadMod(row.Cells[0].Value.ToString());
                 }
             }
+        }
+
+        private void ReadmeBox_LoadMod(string modName)
+        {
+            var modReadmePath = Path.Combine(availableModsPath, modName, modName + ".rtf");
+            modInfoLabel.Text = modName + " Readme";
+            if (File.Exists(modReadmePath)) readmeBox.LoadFile(modReadmePath);
+            else readmeBox.Text = "Mod has no readme file";
         }
 
         private void SelectAllButton_Click(object sender, EventArgs e)
@@ -463,7 +467,7 @@ namespace LLB_Mod_Manager
                         foreach (KeyValuePair<string, List<string>> keyVal in modsInformation) if (keyVal.Key == mod) alreadyAdded = true;
                         if (!alreadyAdded)
                         {
-                            List<string> modInfo = _availableMods.GetModInformation(gameFolderPathString + @"\LLBlaze_Data\Managed\" + mod + ".dll", GitClient);
+                            List<string> modInfo = _availableMods.GetModInformation(Path.Combine(gameFolderPathString, "LLBlaze_Data", "Managed", mod + ".dll"), GitClient);
                             modsInformation.Add(Path.GetFileNameWithoutExtension(mod), modInfo);
                             InstalledModsDGV.Rows.Add(modInfo[0], modInfo[1], modInfo[2]);
                         }
@@ -487,10 +491,10 @@ namespace LLB_Mod_Manager
 
         private void readmeButton_Click(object sender, EventArgs e)
         {
-            if (File.Exists(Directory.GetCurrentDirectory() + @"\Readme.rtf"))
+            if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(),"Readme.rtf")))
             {
                 modInfoLabel.Text = "Mod Manager information";
-                readmeBox.LoadFile(Directory.GetCurrentDirectory() + @"\Readme.rtf");
+                readmeBox.LoadFile(Path.Combine(Directory.GetCurrentDirectory(), "Readme.rtf"));
             }
         }
 
@@ -526,7 +530,7 @@ namespace LLB_Mod_Manager
             config = _config.LoadConfig();
 
             if (config.Count == 2) _config.SaveConfig(config[0], showReadmeCheckbox.Checked);
-            else _config.SaveConfig(@"c:\", showReadmeCheckbox.Checked);
+            else _config.SaveConfig(@"c:\", showReadmeCheckbox.Checked); // TODO I don't get this one
         }
 
         private void ResizeWindow()

@@ -16,12 +16,12 @@ namespace LLB_Mod_Manager
         {
             //LLBMM Paths
             string llbmm_rootDir = Directory.GetCurrentDirectory();
-            string llbmm_modsDir = llbmm_rootDir + @"\mods";
+            string llbmm_modsDir = Path.Combine(llbmm_rootDir, "mods");
 
             //Game Folder Paths
-            string game_managedDir = _gameDataFolder + @"\LLBlaze_Data\Managed";
-            string game_tempDir = game_managedDir + @"\temp";
-            string game_mainAsmFile = game_managedDir + @"\Assembly-CSharp.dll";
+            string game_managedDir = Path.Combine(_gameDataFolder, "LLBlaze_Data", "Managed");
+            string game_tempDir = Path.Combine(game_managedDir + "temp");
+            string game_mainAsmFile = Path.Combine(game_managedDir + "Assembly-CSharp.dll");
 
             List<string> modsToInstallPaths = new List<string>(); //Will hold the file paths for the mods we recieved from the pendingMods ListBox.
 
@@ -29,7 +29,7 @@ namespace LLB_Mod_Manager
             var _modList = modsToInstall;
             foreach (var mod in _modList) //Checks if a mods file exists and adds its path to a list if it does.
             {
-                string modPath = llbmm_modsDir + @"\" + mod.ToString() + @"\" + mod.ToString() + ".dll";
+                string modPath = Path.Combine(llbmm_modsDir, mod.ToString(), mod.ToString() + ".dll");
                 if (File.Exists(modPath)) modsToInstallPaths.Add(modPath);
                 else
                 {
@@ -40,7 +40,7 @@ namespace LLB_Mod_Manager
             }
 
             Directory.CreateDirectory(game_tempDir);
-            try { File.Copy(game_mainAsmFile, game_tempDir + @"\Assembly-CSharp.dll"); }
+            try { File.Copy(game_mainAsmFile, Path.Combine(game_tempDir, "Assembly-CSharp.dll")); }
             catch
             {
                 MessageBox.Show("Could not copy the main Assembly-CSharp.dll to temp folder. Terminating modding attempt. Make sure you've set the correct gamefolder in LLBMM, if it's correct then please verify your gamefiles through steam", "Error");
@@ -49,24 +49,24 @@ namespace LLB_Mod_Manager
 
             foreach (var path in modsToInstallPaths)
             {
-                try { File.Copy(path, game_tempDir + @"\" + Path.GetFileName(path)); }
+                try { File.Copy(path, Path.Combine(game_tempDir, Path.GetFileName(path))); }
                 catch
                 {
                     MessageBox.Show("Skipping mod " + Path.GetFileNameWithoutExtension(path) + ". Could not copy mod file at" + path + " to temp folder", "Error");
                     modsToInstall.Remove(Path.GetFileNameWithoutExtension(path));
                 }
             }
-            if (!File.Exists(game_managedDir + @"\ModMenu.dll")) File.Copy(llbmm_rootDir + @"\ModMenu\ModMenu.dll", game_tempDir + @"\ModMenu.dll"); //If modmenu isn't installed try to install it
+            if (!File.Exists(Path.Combine(game_managedDir, "ModMenu.dll"))) File.Copy(Path.Combine(llbmm_rootDir, "ModMenu", "ModMenu.dll"), Path.Combine(game_tempDir, "ModMenu.dll")); //If modmenu isn't installed try to install it
             else
             {
-                byte[] past = File.ReadAllBytes(game_managedDir + @"\ModMenu.dll");
-                byte[] present = File.ReadAllBytes(llbmm_rootDir + @"\ModMenu\ModMenu.dll"); 
+                byte[] past = File.ReadAllBytes(Path.Combine(game_managedDir,"ModMenu.dll"));
+                byte[] present = File.ReadAllBytes(Path.Combine(llbmm_rootDir, "ModMenu", "ModMenu.dll"));
 
                 if (past.Length != present.Length)
                 { 
                     CleanerHelper ch = new CleanerHelper();
                     ch.RemoveMod(_gameDataFolder, "ModMenu");
-                    File.Copy(llbmm_rootDir + @"\ModMenu\ModMenu.dll", game_tempDir + @"\ModMenu.dll");
+                    File.Copy(Path.Combine(llbmm_rootDir, "ModMenu", "ModMenu.dll"), Path.Combine(game_tempDir, "ModMenu.dll"));
                 }
             }
 
@@ -86,14 +86,14 @@ namespace LLB_Mod_Manager
             ReaderParameters parameters = new ReaderParameters { AssemblyResolver = defaultAssemblyResolver };
 
             //Get the assembly definitions of the main file
-            AssemblyDefinition _mainFileAssemblyDef = AssemblyDefinition.ReadAssembly(game_tempDir + @"\Assembly-CSharp.dll", parameters);
+            AssemblyDefinition _mainFileAssemblyDef = AssemblyDefinition.ReadAssembly(Path.Combine(game_tempDir, "Assembly-CSharp.dll"), parameters);
             ModuleDefinition _mainFileMainModule = _mainFileAssemblyDef.MainModule;
 
             //Get the assembly definitions of the mod files
             List<AssemblyDefinition> _modAssemblyList= new List<AssemblyDefinition>();
             foreach (string path in tempFiles)
             {
-                if (path != game_tempDir + @"\Assembly-CSharp.dll")
+                if (path != Path.Combine(game_tempDir, "Assembly-CSharp.dll"))
                 {
                     try { _modAssemblyList.Add(AssemblyDefinition.ReadAssembly(path)); }
                     catch
@@ -167,7 +167,7 @@ namespace LLB_Mod_Manager
             }
 
             //save Assembly
-            try { _mainFileAssemblyDef.Write(game_tempDir + @"\Assembly-CSharp-modded.dll"); }
+            try { _mainFileAssemblyDef.Write(Path.Combine(game_tempDir, "Assembly-CSharp-modded.dll")); }
             catch
             {
                 MessageBox.Show("Could not write assembly! Is the game running?", "Error");
@@ -179,24 +179,24 @@ namespace LLB_Mod_Manager
 
             foreach (var mod in modsToInstall)
             {
-                var path = game_tempDir + @"\" + mod + ".dll";
-                if (path != game_tempDir + @"\Assembly-CSharp.dll")
+                var path = Path.Combine(game_tempDir, mod + ".dll");
+                if (path != Path.Combine(game_tempDir, "Assembly-CSharp.dll"))
                 {
-                    try { File.Copy(path, game_managedDir + @"\" + Path.GetFileName(path)); }
+                    try { File.Copy(path, Path.Combine(game_managedDir ,Path.GetFileName(path))); }
                     catch
                     {
-                        File.Delete(game_managedDir + @"\" + Path.GetFileName(path));
-                        File.Copy(path, game_managedDir + @"\" + Path.GetFileName(path));
+                        File.Delete(Path.Combine(game_managedDir, Path.GetFileName(path)));
+                        File.Copy(path, Path.Combine(game_managedDir, Path.GetFileName(path)));
                     }
                 }
 
-                var modResourcesDir = llbmm_modsDir + @"\" + mod + @"\" + mod + "Resources";
+                var modResourcesDir = Path.Combine(llbmm_modsDir, mod, mod + "Resources");
                 if (Directory.Exists(modResourcesDir))
                 {
-                    Directory.CreateDirectory(game_managedDir + @"\" + mod + "Resources");
+                    Directory.CreateDirectory(Path.Combine(game_managedDir, mod + "Resources"));
 
-                    foreach (string dirPath in Directory.GetDirectories(modResourcesDir, "*", SearchOption.AllDirectories)) Directory.CreateDirectory(dirPath.Replace(modResourcesDir, game_managedDir + @"\" + mod + "Resources")); 
-                    foreach (string newPath in Directory.GetFiles(modResourcesDir, "*.*", SearchOption.AllDirectories)) File.Copy(newPath, newPath.Replace(modResourcesDir, game_managedDir + @"\" + mod + "Resources"), true);
+                    foreach (string dirPath in Directory.GetDirectories(modResourcesDir, "*", SearchOption.AllDirectories)) Directory.CreateDirectory(dirPath.Replace(modResourcesDir, Path.Combine(game_managedDir, mod + "Resources"))); 
+                    foreach (string newPath in Directory.GetFiles(modResourcesDir, "*.*", SearchOption.AllDirectories)) File.Copy(newPath, newPath.Replace(modResourcesDir, Path.Combine(game_managedDir, mod + "Resources")), true);
                 }
             }
 
@@ -204,20 +204,20 @@ namespace LLB_Mod_Manager
             if (File.Exists(game_mainAsmFile))
             {
                 File.Delete(game_mainAsmFile);
-                File.Copy(game_tempDir + @"\Assembly-CSharp-modded.dll", game_mainAsmFile);
+                File.Copy(Path.Combine(game_tempDir, "Assembly-CSharp-modded.dll"), game_mainAsmFile);
             }
 
             foreach (var mod in modsToInstall)
             {
-                if (File.Exists(game_managedDir + @"\" + mod + @"Resources\ASMRewriter.exe"))
+                if (File.Exists(Path.Combine(game_managedDir, mod, "Resources", "ASMRewriter.exe")))
                 {
-                    RunRewriter(_gameDataFolder, game_managedDir + @"\" + mod + @"Resources\ASMRewriter.exe");
+                    RunRewriter(_gameDataFolder, Path.Combine(game_managedDir, mod, "Resources", "ASMRewriter.exe"));
                 }
             }
             try
             {
-                File.Copy(game_tempDir + @"\ModMenu.dll", game_managedDir + @"\ModMenu.dll");
-                RunRewriter(_gameDataFolder, llbmm_rootDir + @"\ModMenu\ASMRewriter.exe");
+                File.Copy(Path.Combine(game_tempDir, "ModMenu.dll"), Path.Combine(game_managedDir, "ModMenu.dll"));
+                RunRewriter(_gameDataFolder, Path.Combine(llbmm_rootDir, "ModMenu", "ASMRewriter.exe"));
             }
             catch { }
 
@@ -236,20 +236,24 @@ namespace LLB_Mod_Manager
 
         public void RefreshInstalledMods(string _gameFolder, List<string> installedMods)
         {
-            string managedFolder = _gameFolder + @"\LLBlaze_Data\Managed\";
-            string modsFolder = Directory.GetCurrentDirectory() + @"\mods\";
+            string managedFolder = Path.Combine(_gameFolder, "LLBlaze_Data", "Managed");
+            string modsFolder = Path.Combine(Directory.GetCurrentDirectory(), "mods");
             foreach(string mod in installedMods)
             {
-                if (File.Exists(managedFolder + mod + ".dll") && File.Exists(modsFolder + mod + @"\" + mod + ".dll"))
-                {
-                    File.Delete(managedFolder + mod + ".dll");
-                    File.Copy(modsFolder + mod + @"\" + mod + ".dll", managedFolder + mod + ".dll");
+                string llbmm_modFolderPath = Path.Combine(modsFolder, mod);
 
-                    if (Directory.Exists(managedFolder + mod + "Resources") && Directory.Exists(modsFolder + mod + @"\" + mod + "Resources"))
+                if (File.Exists(Path.Combine(managedFolder, mod + ".dll")) && File.Exists(Path.Combine(llbmm_modFolderPath, mod + ".dll")))
+                {
+                    File.Delete(Path.Combine(managedFolder, mod + ".dll"));
+                    File.Copy(Path.Combine(llbmm_modFolderPath, mod + ".dll"), Path.Combine(managedFolder, mod + ".dll"));
+
+                    string game_modRessourceFolder = Path.Combine(managedFolder, mod + "Resources");
+                    string llbmm_modRessourceFolder = Path.Combine(llbmm_modFolderPath, mod + "Resources");
+                    if (Directory.Exists(game_modRessourceFolder) && Directory.Exists(llbmm_modRessourceFolder))
                     {
-                        foreach (string f in Directory.GetFiles(managedFolder + mod + "Resources")) File.Delete(f);
-                        foreach (string dirPath in Directory.GetDirectories(modsFolder + mod + @"\" + mod + "Resources", "*", SearchOption.AllDirectories)) Directory.CreateDirectory(dirPath.Replace(modsFolder + mod + @"\" + mod + "Resources", managedFolder + mod + "Resources"));
-                        foreach (string newPath in Directory.GetFiles(modsFolder + mod + @"\" + mod + "Resources", "*.*", SearchOption.AllDirectories)) File.Copy(newPath, newPath.Replace(modsFolder + mod + @"\" + mod + "Resources", managedFolder +  mod + "Resources"), true);
+                        foreach (string f in Directory.GetFiles(llbmm_modRessourceFolder)) File.Delete(f);
+                        foreach (string dirPath in Directory.GetDirectories(llbmm_modRessourceFolder, "*", SearchOption.AllDirectories)) Directory.CreateDirectory(dirPath.Replace(llbmm_modRessourceFolder, game_modRessourceFolder));
+                        foreach (string newPath in Directory.GetFiles(llbmm_modRessourceFolder, "*.*", SearchOption.AllDirectories)) File.Copy(newPath, newPath.Replace(llbmm_modRessourceFolder, game_modRessourceFolder), true);
                     }
                 }
             }
@@ -259,16 +263,16 @@ namespace LLB_Mod_Manager
         public void DoRewrite(string _gameFolder)
         {
             //Run all ASMRewriters
-            var _rewriters = Directory.EnumerateFiles(_gameFolder + @"\LLBlaze_Data\Managed", "*", SearchOption.AllDirectories)
+            var _rewriters = Directory.EnumerateFiles(Path.Combine(_gameFolder, "LLBlaze_Data", "Managed"), "*", SearchOption.AllDirectories)
                .Where(s => s.EndsWith("ASMRewriter.exe") && s.Count(c => c == '.') == 1)
                .ToList();
-            _rewriters.Add(Directory.GetCurrentDirectory() + @"\ModMenu\" + "ASMRewriter.exe");
+            _rewriters.Add(Path.Combine(Directory.GetCurrentDirectory(), "ModMenu", "ASMRewriter.exe"));
 
             if (_rewriters != null)
             {
                 foreach (var writer in _rewriters)
                 {
-                    var arg = _gameFolder + @"\LLBlaze_Data\Managed";
+                    var arg = Path.Combine(_gameFolder, "LLBlaze_Data", "Managed");
                     var newarg = arg.Replace(" ", "%20");
                     Process ExternalProcess = new Process();
                     ExternalProcess.StartInfo.FileName = writer;
@@ -282,7 +286,7 @@ namespace LLB_Mod_Manager
 
         public void RunRewriter(string _gameFolder, string path)
         {
-            var arg = _gameFolder + @"\LLBlaze_Data\Managed";
+            var arg = Path.Combine(_gameFolder, "LLBlaze_Data", "Managed");
             var newarg = arg.Replace(" ", "%20");
             Process ExternalProcess = new Process();
             ExternalProcess.StartInfo.FileName = path;

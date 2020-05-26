@@ -8,7 +8,7 @@ namespace LLB_Mod_Manager
     {
         public void SaveConfig(string path, bool showReadme)
         {
-            using (StreamWriter sw = File.CreateText(Directory.GetCurrentDirectory() + @"\config.txt"))
+            using (StreamWriter sw = File.CreateText(Path.Combine(Directory.GetCurrentDirectory(), "config.txt")))
             {
                 sw.WriteLine(path);
                 sw.WriteLine(showReadme.ToString());
@@ -19,13 +19,13 @@ namespace LLB_Mod_Manager
         public List<string> LoadConfig()
         {
             List<string> returnList = new List<string>();
-            if (!File.Exists(Directory.GetCurrentDirectory() + @"\config.txt"))
+            if (!File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "config.txt")))
             {
                 Debug.WriteLine("Config file does not exist");
             }
             else
             {
-                var config = File.OpenText(Directory.GetCurrentDirectory() + @"\config.txt");
+                var config = File.OpenText(Path.Combine(Directory.GetCurrentDirectory(), "config.txt"));
                 returnList.Add(config.ReadLine());
                 returnList.Add(config.ReadLine());
                 config.Close();
@@ -36,10 +36,10 @@ namespace LLB_Mod_Manager
 
         public string LoadGitToken()
         {
-            if (!File.Exists(Directory.GetCurrentDirectory() + @"\token.txt")) { }
+            if (!File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "token.txt"))) { }
             else
             {
-                var token = File.OpenText(Directory.GetCurrentDirectory() + @"\token.txt");
+                var token = File.OpenText(Path.Combine(Directory.GetCurrentDirectory(), "token.txt"));
                 var returnString = token.ReadLine();
                 token.Close();
                 return returnString;
