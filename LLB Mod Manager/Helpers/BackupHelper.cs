@@ -7,8 +7,9 @@ namespace LLB_Mod_Manager
     {
         public void DoBackup(string gameDataFolder)
         {
-            string assemblyPath = Path.Combine(gameDataFolder, "LLBlaze_Data", "Managed", "Assembly-CSharp.dll");
-            string backupPath = Path.Combine(gameDataFolder, "LLBlaze_Data", "Managed", "ModManagerBackup");
+            string gameDataDirName = PathHelper.Get().GetLLBGameDataDirName();
+            string assemblyPath = Path.Combine(gameDataFolder, gameDataDirName, "Managed", "Assembly-CSharp.dll");
+            string backupPath = Path.Combine(gameDataFolder, gameDataDirName, "Managed", "ModManagerBackup");
             string backupAssemblyPath = Path.Combine(backupPath, "Assembly-CSharp-Backup.dll");
 
             if (File.Exists(assemblyPath))
@@ -29,8 +30,9 @@ namespace LLB_Mod_Manager
 
         public void RestoreBackup(string gameDataFolder)
         {
-            string assemblyPath = Path.Combine(gameDataFolder, "LLBlaze_Data", "Managed", "Assembly-CSharp.dll");
-            string backupPath = Path.Combine(gameDataFolder, "LLBlaze_Data", "Managed", "ModManagerBackup");
+            string gameDataDirName = PathHelper.Get().GetLLBGameDataDirName();
+            string assemblyPath = Path.Combine(gameDataFolder, gameDataDirName, "Managed", "Assembly-CSharp.dll");
+            string backupPath = Path.Combine(gameDataFolder, gameDataDirName, "Managed", "ModManagerBackup");
             string backupAssemblyPath = Path.Combine(backupPath, "Assembly-CSharp-Backup.dll");
             if (File.Exists(backupAssemblyPath))
             {
@@ -41,7 +43,8 @@ namespace LLB_Mod_Manager
 
         public void DeleteBackup(string gameDataFolder)
         {
-            string backupPath = Path.Combine(gameDataFolder, "LLBlaze_Data", "Managed", "ModManagerBackup");
+            string gameDataDirName = PathHelper.Get().GetLLBGameDataDirName();
+            string backupPath = Path.Combine(gameDataFolder, gameDataDirName, "Managed", "ModManagerBackup");
             string backupAssemblyPath = Path.Combine(backupPath, "Assembly-CSharp-Backup.dll");
 
             if (File.Exists(backupAssemblyPath)) File.Delete(backupAssemblyPath);

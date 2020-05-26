@@ -11,10 +11,6 @@ using System.Runtime.InteropServices;
 
 namespace LLB_Mod_Manager
 {
-    enum Paths
-    {
-
-    }
     public partial class App : Form
     {
         public string gameFolderPathString = "";
@@ -119,7 +115,7 @@ namespace LLB_Mod_Manager
                     foreach (KeyValuePair<string, List<string>> keyVal in modsInformation) if (keyVal.Key == mod) alreadyAdded = true;
                     if (!alreadyAdded)
                     {
-                        List<string> modInfo = _availableMods.GetModInformation(Path.Combine(gameFolderPathString, "LLBlaze_Data", "Managed", mod + ".dll"), GitClient);
+                        List<string> modInfo = _availableMods.GetModInformation(Path.Combine(gameFolderPathString, PathHelper.Get().GetLLBGameDataDirName(), "Managed", mod + ".dll"), GitClient);
                         modsInformation.Add(Path.GetFileNameWithoutExtension(mod), modInfo);
                         InstalledModsDGV.Rows.Add(modInfo[0], modInfo[1], modInfo[2]);
                     }
@@ -223,8 +219,14 @@ namespace LLB_Mod_Manager
 
             if (configPath.Count > 0)
             {
-                if (configPath[0].Contains(Path.DirectorySeparatorChar + "LLBlaze_Data")) MessageBox.Show("LLBMM has detected that you have LLBlaze_Data as your selected game folder. This version requires you to set your selected folder to LLBlaze instead. (The folder containing the exe)", "Warning");
-
+                string gameDataDirName = PathHelper.Get().GetLLBGameDataDirName();
+                string gameDirName = PathHelper.Get().GetLLBGameDirName();
+                if (configPath[0].Contains(Path.DirectorySeparatorChar + gameDataDirName))
+                {
+                    MessageBox.Show("LLBMM has detected that you have "+ gameDataDirName +
+                        " as your selected game folder. This version requires you to set your selected folder to "+
+                        gameDirName +" instead. (The folder containing the exe)", "Warning");
+                }
                 gameFolderPath.Text = configPath[0];
                 gameFolderPathString = configPath[0];
                 if (configPath[1] == "True") showReadmeCheckbox.Checked = true;
@@ -270,17 +272,20 @@ namespace LLB_Mod_Manager
 
         private void BrowseButton_Click(object sender, EventArgs e)
         {
+            string gameExecFilename = PathHelper.Get().GetLLBExecutableName();
+            string gameDirName = PathHelper.Get().GetLLBGameDirName();
+
             FolderBrowserDialog _LLBFolderFinder = new FolderBrowserDialog();
-            _LLBFolderFinder.Description = "Please select the LLBlaze folder (The folder where the .exe is located)";
+            _LLBFolderFinder.Description = "Please select the "+ gameDirName + " folder (The folder where the .exe is located)";
 
             if (_config.LoadConfig().Count == 0) _LLBFolderFinder.SelectedPath = Directory.GetCurrentDirectory();
             else _LLBFolderFinder.SelectedPath = _config.LoadConfig()[0];
 
             if (_LLBFolderFinder.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                if (!File.Exists(Path.Combine(_LLBFolderFinder.SelectedPath ,"LLBlaze.exe")))
+                if (!File.Exists(Path.Combine(_LLBFolderFinder.SelectedPath, gameExecFilename)))
                 {
-                    MessageBox.Show("The selected directory does not contain LLBlaze.exe, please select the folder containing said file", "Warning");
+                    MessageBox.Show("The selected directory does not contain "+ gameExecFilename + ", please select the folder containing said file.", "Warning");
                 }
                 _config.SaveConfig(_LLBFolderFinder.SelectedPath, showReadmeCheckbox.Checked);
                 gameFolderPath.Text = _LLBFolderFinder.SelectedPath + dataFolderEnding;
@@ -467,7 +472,7 @@ namespace LLB_Mod_Manager
                         foreach (KeyValuePair<string, List<string>> keyVal in modsInformation) if (keyVal.Key == mod) alreadyAdded = true;
                         if (!alreadyAdded)
                         {
-                            List<string> modInfo = _availableMods.GetModInformation(Path.Combine(gameFolderPathString, "LLBlaze_Data", "Managed", mod + ".dll"), GitClient);
+                            List<string> modInfo = _availableMods.GetModInformation(Path.Combine(gameFolderPathString, PathHelper.Get().GetLLBGameDataDirName(), "Managed", mod + ".dll"), GitClient);
                             modsInformation.Add(Path.GetFileNameWithoutExtension(mod), modInfo);
                             InstalledModsDGV.Rows.Add(modInfo[0], modInfo[1], modInfo[2]);
                         }

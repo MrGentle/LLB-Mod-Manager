@@ -19,7 +19,7 @@ namespace LLB_Mod_Manager
             string llbmm_modsDir = Path.Combine(llbmm_rootDir, "mods");
 
             //Game Folder Paths
-            string game_managedDir = Path.Combine(_gameDataFolder, "LLBlaze_Data", "Managed");
+            string game_managedDir = Path.Combine(_gameDataFolder, PathHelper.Get().GetLLBGameDataDirName(), "Managed");
             string game_tempDir = Path.Combine(game_managedDir + "temp");
             string game_mainAsmFile = Path.Combine(game_managedDir + "Assembly-CSharp.dll");
 
@@ -236,7 +236,7 @@ namespace LLB_Mod_Manager
 
         public void RefreshInstalledMods(string _gameFolder, List<string> installedMods)
         {
-            string managedFolder = Path.Combine(_gameFolder, "LLBlaze_Data", "Managed");
+            string managedFolder = Path.Combine(_gameFolder, PathHelper.Get().GetLLBGameDataDirName(), "Managed");
             string modsFolder = Path.Combine(Directory.GetCurrentDirectory(), "mods");
             foreach(string mod in installedMods)
             {
@@ -262,8 +262,9 @@ namespace LLB_Mod_Manager
 
         public void DoRewrite(string _gameFolder)
         {
+            string gameDataDirName = PathHelper.Get().GetLLBGameDataDirName();
             //Run all ASMRewriters
-            var _rewriters = Directory.EnumerateFiles(Path.Combine(_gameFolder, "LLBlaze_Data", "Managed"), "*", SearchOption.AllDirectories)
+            var _rewriters = Directory.EnumerateFiles(Path.Combine(_gameFolder, gameDataDirName, "Managed"), "*", SearchOption.AllDirectories)
                .Where(s => s.EndsWith("ASMRewriter.exe") && s.Count(c => c == '.') == 1)
                .ToList();
             _rewriters.Add(Path.Combine(Directory.GetCurrentDirectory(), "ModMenu", "ASMRewriter.exe"));
@@ -272,7 +273,7 @@ namespace LLB_Mod_Manager
             {
                 foreach (var writer in _rewriters)
                 {
-                    var arg = Path.Combine(_gameFolder, "LLBlaze_Data", "Managed");
+                    var arg = Path.Combine(_gameFolder, gameDataDirName, "Managed");
                     var newarg = arg.Replace(" ", "%20");
                     Process ExternalProcess = new Process();
                     ExternalProcess.StartInfo.FileName = writer;
@@ -286,7 +287,7 @@ namespace LLB_Mod_Manager
 
         public void RunRewriter(string _gameFolder, string path)
         {
-            var arg = Path.Combine(_gameFolder, "LLBlaze_Data", "Managed");
+            var arg = Path.Combine(_gameFolder, PathHelper.Get().GetLLBGameDataDirName(), "Managed");
             var newarg = arg.Replace(" ", "%20");
             Process ExternalProcess = new Process();
             ExternalProcess.StartInfo.FileName = path;
