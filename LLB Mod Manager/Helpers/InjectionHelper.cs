@@ -12,14 +12,14 @@ namespace LLB_Mod_Manager
 {
     public class InjectionHelper
     {
-        public bool InstallSelectedMods(string _gameDataFolder, List<string> modsToInstall)
+        public bool InstallSelectedMods(string _gameFolder, List<string> modsToInstall)
         {
             //LLBMM Paths
             string llbmm_rootDir = Directory.GetCurrentDirectory();
             string llbmm_modsDir = Path.Combine(llbmm_rootDir, "mods");
 
             //Game Folder Paths
-            string game_managedDir = Path.Combine(_gameDataFolder, PathHelper.Get().GetLLBGameDataDirName(), "Managed");
+            string game_managedDir = PathHelper.Get().GetLLBGameManagedDirPath(_gameFolder);
             string game_tempDir = Path.Combine(game_managedDir, "temp");
             string game_mainAsmFile = Path.Combine(game_managedDir, "Assembly-CSharp.dll");
 
@@ -59,13 +59,13 @@ namespace LLB_Mod_Manager
             if (!File.Exists(Path.Combine(game_managedDir, "ModMenu.dll"))) File.Copy(Path.Combine(llbmm_rootDir, "ModMenu", "ModMenu.dll"), Path.Combine(game_tempDir, "ModMenu.dll")); //If modmenu isn't installed try to install it
             else
             {
-                byte[] past = File.ReadAllBytes(Path.Combine(game_managedDir,"ModMenu.dll"));
+                byte[] past = File.ReadAllBytes(Path.Combine(game_managedDir, "ModMenu.dll"));
                 byte[] present = File.ReadAllBytes(Path.Combine(llbmm_rootDir, "ModMenu", "ModMenu.dll"));
 
                 if (past.Length != present.Length)
                 { 
                     CleanerHelper ch = new CleanerHelper();
-                    ch.RemoveMod(_gameDataFolder, "ModMenu");
+                    ch.RemoveMod(_gameFolder, "ModMenu");
                     File.Copy(Path.Combine(llbmm_rootDir, "ModMenu", "ModMenu.dll"), Path.Combine(game_tempDir, "ModMenu.dll"));
                 }
             }
@@ -209,15 +209,15 @@ namespace LLB_Mod_Manager
 
             foreach (var mod in modsToInstall)
             {
-                if (File.Exists(Path.Combine(game_managedDir, mod, "Resources", "ASMRewriter.exe")))
+                if (File.Exists(Path.Combine(game_managedDir, mod + "Resources", "ASMRewriter.exe")))
                 {
-                    RunRewriter(_gameDataFolder, Path.Combine(game_managedDir, mod, "Resources", "ASMRewriter.exe"));
+                    RunRewriter(_gameFolder, Path.Combine(game_managedDir, mod + "Resources", "ASMRewriter.exe"));
                 }
             }
             try
             {
                 File.Copy(Path.Combine(game_tempDir, "ModMenu.dll"), Path.Combine(game_managedDir, "ModMenu.dll"));
-                RunRewriter(_gameDataFolder, Path.Combine(llbmm_rootDir, "ModMenu", "ASMRewriter.exe"));
+                RunRewriter(_gameFolder, Path.Combine(llbmm_rootDir, "ModMenu", "ASMRewriter.exe"));
             }
             catch { }
 
@@ -236,7 +236,7 @@ namespace LLB_Mod_Manager
 
         public void RefreshInstalledMods(string _gameFolder, List<string> installedMods)
         {
-            string managedFolder = Path.Combine(_gameFolder, PathHelper.Get().GetLLBGameDataDirName(), "Managed");
+            string managedFolder = PathHelper.Get().GetLLBGameManagedDirPath(_gameFolder);
             string modsFolder = Path.Combine(Directory.GetCurrentDirectory(), "mods");
             foreach(string mod in installedMods)
             {
@@ -262,9 +262,9 @@ namespace LLB_Mod_Manager
 
         public void DoRewrite(string _gameFolder)
         {
-            string gameDataDirName = PathHelper.Get().GetLLBGameDataDirName();
+            string gameManagedPath = PathHelper.Get().GetLLBGameManagedDirPath(_gameFolder);
             //Run all ASMRewriters
-            var _rewriters = Directory.EnumerateFiles(Path.Combine(_gameFolder, gameDataDirName, "Managed"), "*", SearchOption.AllDirectories)
+            var _rewriters = Directory.EnumerateFiles(gameManagedPath, "*", SearchOption.AllDirectories)
                .Where(s => s.EndsWith("ASMRewriter.exe") && s.Count(c => c == '.') == 1)
                .ToList();
             _rewriters.Add(Path.Combine(Directory.GetCurrentDirectory(), "ModMenu", "ASMRewriter.exe"));
@@ -273,7 +273,7 @@ namespace LLB_Mod_Manager
             {
                 foreach (var writer in _rewriters)
                 {
-                    var arg = Path.Combine(_gameFolder, gameDataDirName, "Managed");
+                    var arg = gameManagedPath;
                     var newarg = arg.Replace(" ", "%20");
                     Process ExternalProcess = new Process();
                     ExternalProcess.StartInfo.FileName = writer;
@@ -287,7 +287,8 @@ namespace LLB_Mod_Manager
 
         public void RunRewriter(string _gameFolder, string path)
         {
-            var arg = Path.Combine(_gameFolder, PathHelper.Get().GetLLBGameDataDirName(), "Managed");
+            string gameManagedPath = PathHelper.Get().GetLLBGameManagedDirPath(_gameFolder);
+            var arg = Path.Combine(gameManagedPath);
             var newarg = arg.Replace(" ", "%20");
             Process ExternalProcess = new Process();
             ExternalProcess.StartInfo.FileName = path;
