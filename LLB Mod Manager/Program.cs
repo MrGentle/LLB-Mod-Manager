@@ -11,6 +11,13 @@ namespace LLB_Mod_Manager
         [STAThread]
         static void Main()
         {
+            string[] args = Environment.GetCommandLineArgs();
+            if (args.Length > 2 && (args[1] == "-c" || args[1] == "--console"))
+            {
+                CommandLineHelper _commandLineHelper = new CommandLineHelper();
+                _commandLineHelper.RunFromArguments(args);
+                return;
+            }
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new App());

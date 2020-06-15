@@ -105,6 +105,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Helpers\PathHelper.cs" />
+    <Compile Include="Helpers\CommandLineHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="config\App.config">
