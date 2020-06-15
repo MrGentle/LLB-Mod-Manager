@@ -94,11 +94,19 @@ namespace LLB_Mod_Manager
             if (_cleanerHelper.CheckModStatus(gameFolderPathString) == true)
             {
                 var installedModsList = _cleanerHelper.InstalledMods(gameFolderPathString);
-                _cleanerHelper.RemoveMods(gameFolderPathString, installedModsList);
-                _cleanerHelper.CleanGameFolder(gameFolderPathString);
-                _cleanerHelper.RemoveMod(gameFolderPathString, "ModMenu");
-                _backupHelper.RestoreBackup(gameFolderPathString);
-                _backupHelper.DeleteBackup(gameFolderPathString);
+                if (installedModsList.Count > 0)
+                {
+                    _cleanerHelper.RemoveMods(gameFolderPathString, installedModsList);
+                    _cleanerHelper.CleanGameFolder(gameFolderPathString);
+                }
+
+                try
+                {
+                    _cleanerHelper.RemoveMod(gameFolderPathString, "ModMenu");
+                    _backupHelper.RestoreBackup(gameFolderPathString);
+                    _backupHelper.DeleteBackup(gameFolderPathString);
+                }
+                catch { Console.WriteLine("Could not remove ModMenu. Please verify your files"); }
                 Console.WriteLine("Uninstalled All mods");
             }
             else
