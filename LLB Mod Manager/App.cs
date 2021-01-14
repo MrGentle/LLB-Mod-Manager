@@ -544,8 +544,8 @@ namespace LLB_Mod_Manager
 
         private void ResizeWindow()
         {
-            if (!showReadmeCheckbox.Checked) this.Size = new Size(540, 590);
-            else this.Size = new Size(1070, 590);
+            //if (!showReadmeCheckbox.Checked) this.Size = new Size(540, 590);
+            //else this.Size = new Size(1070, 590);
         }
 
         private void buyMeACoffeeButton_Click(object sender, EventArgs e)

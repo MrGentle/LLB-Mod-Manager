@@ -20,6 +20,8 @@ namespace LLB_Mod_Manager
             bool willPrintUsage = false;
             bool safeInstall = true;
 
+            if (args.Length == 2) willPrintUsage = true;
+
             for (int i = 2; i < args.Length; i++)
             {
                 switch (args[i])
@@ -41,7 +43,11 @@ namespace LLB_Mod_Manager
 
                     case "-u":
                     case "--uninstall":
-                        modsToUninstall.Add(args[i]);
+                        if ((i + 1) < args.Length)
+                        {
+                            i++;
+                            modsToUninstall.Add(args[i]);
+                        }
                         break;
 
                     case "-i":

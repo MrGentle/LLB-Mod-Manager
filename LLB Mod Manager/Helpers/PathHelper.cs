@@ -26,8 +26,8 @@ namespace LLB_Mod_Manager
             if (_isWindows) filename = "LLBlaze.exe";
             else if (_isLinux)
             {
-                if (System.Environment.Is64BitOperatingSystem) filename = "LLBLAZE.x86_64";
-                else filename = "LLBLAZE.x86";
+                if (System.Environment.Is64BitOperatingSystem) filename = "LLBlaze.x86_64";
+                else filename = "LLBlaze.x86";
             }
             else if (_isOSX) filename = "LLBlaze";
 
@@ -54,7 +54,7 @@ namespace LLB_Mod_Manager
         {
             string filename = null;
             if (_isWindows) filename = "LLBlaze_Data";
-            else if (_isLinux) filename = "LLBLAZE_Data";
+            else if (_isLinux) filename = "LLBlaze_Data";
             else if (_isOSX) filename = "Data";
 
             return filename;
