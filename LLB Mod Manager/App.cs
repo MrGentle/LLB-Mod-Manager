@@ -242,7 +242,10 @@ namespace LLB_Mod_Manager
             if (File.Exists(Path.Combine(LLBMMPath, "Readme.rtf")))
                 readmeBox.LoadFile(Path.Combine(LLBMMPath, "Readme.rtf"));
             else
+            {
+                readmeBox.Clear();
                 readmeBox.AppendText("Could not find the LLBMM readme file..");
+            }
 
             var token = _config.LoadGitToken();
             if (token != "")
@@ -505,7 +508,10 @@ namespace LLB_Mod_Manager
             if (File.Exists(Path.Combine(LLBMMPath, "Readme.rtf")))
                 readmeBox.LoadFile(Path.Combine(LLBMMPath, "Readme.rtf"));
             else
+            {
+                readmeBox.Clear();
                 readmeBox.AppendText("Could not find the LLBMM readme file..");
+            }
         }
 
         private void stepByStepGuideButton_Click(object sender, EventArgs e)
