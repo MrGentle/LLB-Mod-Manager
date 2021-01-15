@@ -99,7 +99,7 @@ namespace LLB_Mod_Manager
 
             AssemblyDefinition modAsm = null;
             try { modAsm = AssemblyDefinition.ReadAssembly(Path.Combine(managedPath, mod + ".dll")); }
-            catch {}
+            catch { return false; }
 
             TypeDefinition injectPointType = asmDef.MainModule.GetType(injectTypeName);
             foreach (MethodDefinition method in injectPointType.Methods)

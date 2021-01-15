@@ -26,7 +26,7 @@ namespace LLB_Mod_Manager
         public GitHubClient GitClient = new GitHubClient(new ProductHeaderValue("LLBMM"));
         public Dictionary<string, List<string>> modsInformation = new Dictionary<string, List<string>>();
 
-        private string versionString = "v1.3.0";
+        private string versionString = "v1.3.2";
         public string newestVersion = "";
 
         public App()
