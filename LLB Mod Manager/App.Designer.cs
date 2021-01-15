@@ -207,6 +207,7 @@
             this.AvailableModsDGV.TabIndex = 19;
             this.AvailableModsDGV.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.AvailableModsDGV_CellClick);
             this.AvailableModsDGV.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.AvailableModsDGV_CellContentClick);
+            this.AvailableModsDGV.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             // 
             // InstalledModsDGV
             // 
@@ -226,6 +227,7 @@
             this.InstalledModsDGV.TabIndex = 20;
             this.InstalledModsDGV.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.InstalledModsDGV_CellClick);
             this.InstalledModsDGV.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.InstalledModsDGV_CellContentClick);
+            this.InstalledModsDGV.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             // 
             // SelectAllButton
             // 
@@ -337,8 +339,7 @@
             // 
             // App
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.ClientSize = new System.Drawing.Size(1062, 551);
             this.Controls.Add(this.buyMeACoffeeButton);

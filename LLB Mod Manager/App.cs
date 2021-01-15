@@ -238,11 +238,11 @@ namespace LLB_Mod_Manager
             availableModsPath = Path.Combine(LLBMMPath, "mods");
             Directory.CreateDirectory(availableModsPath);
 
+            modInfoLabel.Text = "Mod Manager information";
             if (File.Exists(Path.Combine(LLBMMPath, "Readme.rtf")))
-            {
-                modInfoLabel.Text = "Mod Manager information";
                 readmeBox.LoadFile(Path.Combine(LLBMMPath, "Readme.rtf"));
-            }
+            else
+                readmeBox.AppendText("Could not find the LLBMM readme file..");
 
             var token = _config.LoadGitToken();
             if (token != "")
@@ -500,11 +500,12 @@ namespace LLB_Mod_Manager
 
         private void readmeButton_Click(object sender, EventArgs e)
         {
-            if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(),"Readme.rtf")))
-            {
-                modInfoLabel.Text = "Mod Manager information";
-                readmeBox.LoadFile(Path.Combine(Directory.GetCurrentDirectory(), "Readme.rtf"));
-            }
+            string LLBMMPath = Directory.GetCurrentDirectory();
+            modInfoLabel.Text = "Mod Manager information";
+            if (File.Exists(Path.Combine(LLBMMPath, "Readme.rtf")))
+                readmeBox.LoadFile(Path.Combine(LLBMMPath, "Readme.rtf"));
+            else
+                readmeBox.AppendText("Could not find the LLBMM readme file..");
         }
 
         private void stepByStepGuideButton_Click(object sender, EventArgs e)
@@ -544,8 +545,8 @@ namespace LLB_Mod_Manager
 
         private void ResizeWindow()
         {
-            //if (!showReadmeCheckbox.Checked) this.Size = new Size(540, 590);
-            //else this.Size = new Size(1070, 590);
+            if (!showReadmeCheckbox.Checked) this.Size = new Size(540, 590);
+            else this.Size = new Size(1070, 590);
         }
 
         private void buyMeACoffeeButton_Click(object sender, EventArgs e)
